@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
+import AdventureMap from "./components/AdventureMap.jsx";
 import Leaderboard from "./components/Leaderboard.jsx";
 import PlayerSetup from "./components/PlayerSetup.jsx";
-import QuizCard from "./components/QuizCard.jsx";
 import ResultScreen from "./components/ResultScreen.jsx";
 import StartScreen from "./components/StartScreen.jsx";
 import { getRandomQuestions } from "./data/questions.js";
@@ -55,7 +55,7 @@ const App = () => {
       player,
       questions: getRandomQuestions(10),
     });
-    setScreen("quiz");
+    setScreen("adventure");
   };
 
   const handleAnswer = (selectedAnswer) => {
@@ -145,8 +145,8 @@ const App = () => {
         <PlayerSetup onBack={() => setScreen("start")} onSubmit={beginQuiz} />
       ) : null}
 
-      {screen === "quiz" && currentQuestion ? (
-        <QuizCard
+      {screen === "adventure" && currentQuestion ? (
+        <AdventureMap
           player={game.player}
           correctCount={correctCount}
           question={currentQuestion}
