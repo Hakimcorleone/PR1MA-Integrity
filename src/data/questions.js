@@ -1,499 +1,471 @@
-export const questions = [
+export const subScoreLabels = [
+  "Integrity Judgment",
+  "Conflict Radar",
+  "Escalation Courage",
+  "Policy Awareness",
+];
+
+export const missionQuestions = [
   {
-    id: "Q001",
-    category: "Gift & Hospitality",
-    difficulty: "Easy",
+    id: "M01",
+    theme: "Gift and Hospitality from Vendors",
+    subScore: "Conflict Radar",
+    location: "Vendor Engagement Desk",
     question:
-      "A vendor offers you a festive hamper one week before an evaluation meeting. What should you do?",
+      "A vendor involved in an active procurement exercise sends you a premium festive hamper and invites you to lunch before the evaluation meeting. What is your decision?",
     options: [
-      "Accept it because it is only a festive gift",
-      "Accept it but do not tell anyone",
-      "Politely decline and declare the matter according to policy",
-      "Ask the vendor to send it to your home",
+      {
+        id: "M01-A",
+        text: "Politely decline the benefit, record the offer, and inform the Integrity or Procurement secretariat.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "This protects independence and manages the actual or perceived conflict before evaluation starts.",
+      },
+      {
+        id: "M01-B",
+        text: "Ask whether the hamper can be redirected to the company gift register while you skip the lunch.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Declaring and redirecting the gift is better than accepting it, but the offer should still be escalated because timing matters.",
+      },
+      {
+        id: "M01-C",
+        text: "Accept the hamper only because it is a festive custom and does not affect your judgement.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Customary gifts can still create a red flag when a vendor has pending business with the organisation.",
+      },
+      {
+        id: "M01-D",
+        text: "Ask the vendor to send the hamper to your home address so it stays private.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "Hiding a benefit from a vendor creates serious integrity and ABMS control concerns.",
+      },
     ],
-    correctAnswer: "Politely decline and declare the matter according to policy",
-    explanation:
-      "The best action is to decline and declare because the gift may create an actual, potential, or perceived conflict of interest.",
-    whyItMatters:
-      "Gifts from vendors during active business dealings may compromise independence and trust.",
-    redFlag: "Gift offered close to a decision-making or evaluation process.",
-    points: 10,
   },
   {
-    id: "Q002",
-    category: "Anti-Bribery",
-    difficulty: "Medium",
+    id: "M02",
+    theme: "Conflict of Interest",
+    subScore: "Conflict Radar",
+    location: "Declaration Review Panel",
     question:
-      "A consultant says a small facilitation payment will speed up a permit review. What is the right call?",
+      "You are appointed to a technical evaluation committee and realise your cousin is a director of one bidder. The bidder is qualified. What should you do?",
     options: [
-      "Pay it if the amount is minor",
-      "Ask for a receipt and proceed",
-      "Refuse, document the request, and escalate through the proper channel",
-      "Let the consultant decide because they are external",
+      {
+        id: "M02-A",
+        text: "Declare the relationship immediately and let the committee decide whether you must be recused.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Transparent declaration allows the organisation to manage the conflict before any decision is influenced.",
+      },
+      {
+        id: "M02-B",
+        text: "Continue only with administrative tasks while waiting for written guidance from the secretariat.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Pausing decision-making helps, but the relationship still needs a formal declaration and management decision.",
+      },
+      {
+        id: "M02-C",
+        text: "Stay in the committee because you believe you can be objective.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Integrity risk includes perceived conflict, not only proven bias.",
+      },
+      {
+        id: "M02-D",
+        text: "Tell your cousin to submit a better commercial offer so the company wins fairly.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "Giving an interested party special access undermines fair competition and procurement governance.",
+      },
     ],
-    correctAnswer:
-      "Refuse, document the request, and escalate through the proper channel",
-    explanation:
-      "Improper payments should not be made directly or indirectly through third parties. The request should be recorded and escalated.",
-    whyItMatters:
-      "Facilitation payments can expose the organisation and individuals to bribery risk even when framed as routine.",
-    redFlag: "Payment requested to influence or accelerate an official process.",
-    points: 10,
   },
   {
-    id: "Q003",
-    category: "Conflict of Interest",
-    difficulty: "Easy",
+    id: "M03",
+    theme: "Procurement Evaluation",
+    subScore: "Integrity Judgment",
+    location: "Tender Evaluation Room",
     question:
-      "You are assigned to review bids and realise your cousin owns one of the bidding companies. What should you do?",
+      "During evaluation, a senior stakeholder says the team should favour a long-time vendor because they are easier to work with, even though another bidder scored higher. What is the right call?",
     options: [
-      "Keep reviewing because you can stay objective",
-      "Declare the relationship and recuse yourself if required",
-      "Tell your cousin to submit a lower price",
-      "Ask a colleague to review only the technical part",
+      {
+        id: "M03-A",
+        text: "Keep to the approved criteria, document the concern, and escalate any attempt to override the evaluation.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Procurement evaluation must follow approved criteria and be supported by a clear audit trail.",
+      },
+      {
+        id: "M03-B",
+        text: "Ask the committee chair to record a formal justification before any recommendation changes.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Documentation is important, but pressure to bypass criteria should also be challenged and escalated.",
+      },
+      {
+        id: "M03-C",
+        text: "Adjust the qualitative score slightly because relationship history has practical value.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Changing scores without approved criteria creates bias and weakens procurement integrity.",
+      },
+      {
+        id: "M03-D",
+        text: "Delete the draft scoring sheet and prepare a new one that supports the preferred vendor.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "Manipulating evaluation records is misconduct and may indicate procurement fraud.",
+      },
     ],
-    correctAnswer: "Declare the relationship and recuse yourself if required",
-    explanation:
-      "A family relationship with a bidder is a potential conflict and should be declared before participating further.",
-    whyItMatters:
-      "Transparent declarations protect the fairness of decisions and the credibility of the process.",
-    redFlag: "Personal or family connection to a party affected by your decision.",
-    points: 10,
   },
   {
-    id: "Q004",
-    category: "Whistleblowing",
-    difficulty: "Easy",
+    id: "M04",
+    theme: "False Claim or Payment Verification",
+    subScore: "Policy Awareness",
+    location: "Payment Verification Desk",
     question:
-      "You notice a colleague repeatedly splitting invoices to avoid approval limits. What is the best response?",
+      "A contractor submits a 100% completion claim, but site records and photos show the work is only around 70% complete. Finance asks whether payment can proceed to avoid delay. What should you do?",
     options: [
-      "Ignore it because finance will eventually notice",
-      "Ask the colleague for a share of the savings",
-      "Report the concern through the appropriate whistleblowing or compliance channel",
-      "Post about it on social media",
+      {
+        id: "M04-A",
+        text: "Hold the payment pending verification, request supporting evidence, and document the discrepancy.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Payment verification must be evidence-based before the organisation releases funds.",
+      },
+      {
+        id: "M04-B",
+        text: "Approve only the verified portion if the contract and approval process allow partial payment.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Partial payment can be appropriate when supported by contract terms and verified completion records.",
+      },
+      {
+        id: "M04-C",
+        text: "Approve full payment because the contractor promises to finish the balance next week.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "A promise is not a control. Payment should match verified deliverables.",
+      },
+      {
+        id: "M04-D",
+        text: "Ask the site team to amend the records so the claim file looks complete.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "Changing records to support a false claim is a serious breach of integrity and financial control.",
+      },
     ],
-    correctAnswer:
-      "Report the concern through the appropriate whistleblowing or compliance channel",
-    explanation:
-      "Suspicious activity should be raised through protected reporting channels so it can be assessed properly.",
-    whyItMatters:
-      "Early reporting helps prevent loss, manipulation of controls, and retaliation against good-faith reporters.",
-    redFlag: "Repeated transaction splitting to bypass controls.",
-    points: 10,
   },
   {
-    id: "Q005",
-    category: "Procurement Integrity",
-    difficulty: "Medium",
+    id: "M05",
+    theme: "Whistleblowing",
+    subScore: "Escalation Courage",
+    location: "Whistleblowing Channel",
     question:
-      "A bidder asks you for the evaluation criteria that have not been released to all bidders. What should you do?",
+      "A colleague tells you they suspect bid prices were leaked, but they fear retaliation if they report it. They have emails and meeting notes. What advice should you give?",
     options: [
-      "Share the criteria to help them prepare",
-      "Share only verbally so there is no record",
-      "Refuse and ensure all bidders receive the same approved information",
-      "Ask them to send a personal thank-you gift first",
+      {
+        id: "M05-A",
+        text: "Encourage them to use the approved Whistleblowing channel, keep facts clear, and preserve evidence.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Protected channels help the organisation assess concerns while preserving confidentiality and evidence.",
+      },
+      {
+        id: "M05-B",
+        text: "Offer to accompany them to Compliance or Integrity so the concern is raised properly.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Support helps reduce fear, but the matter should still go through an approved reporting route.",
+      },
+      {
+        id: "M05-C",
+        text: "Wait until they obtain absolute proof before reporting anything.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Good-faith reporting can start with reasonable concern. Waiting may allow harm to continue.",
+      },
+      {
+        id: "M05-D",
+        text: "Forward the emails to all bidders so everyone knows what happened.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "Broadcasting allegations can breach confidentiality and damage the investigation process.",
+      },
     ],
-    correctAnswer:
-      "Refuse and ensure all bidders receive the same approved information",
-    explanation:
-      "Procurement information must be controlled and shared equally through approved channels.",
-    whyItMatters:
-      "Unequal information can distort competition and undermine confidence in the tender process.",
-    redFlag: "A bidder seeking privileged information before or during evaluation.",
-    points: 10,
   },
   {
-    id: "Q006",
-    category: "False Claims / Payment Risk",
-    difficulty: "Medium",
+    id: "M06",
+    theme: "Misconduct Reporting",
+    subScore: "Escalation Courage",
+    location: "Control Monitoring Desk",
     question:
-      "A contractor submits a claim for work that your site notes show is only 70% completed. What is the right call?",
+      "You notice a staff member repeatedly splitting invoices just below the approval limit and using the same vendor each time. What should you do?",
     options: [
-      "Approve it because the balance will be completed soon",
-      "Reject or hold the claim pending verification and supporting evidence",
-      "Approve it if the contractor promises a discount next time",
-      "Ask the contractor to change the site notes",
+      {
+        id: "M06-A",
+        text: "Report the pattern through the proper line manager, Finance control, or Integrity channel with supporting details.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Repeated transaction splitting is a red flag that should be reviewed through proper governance channels.",
+      },
+      {
+        id: "M06-B",
+        text: "Ask for clarification and keep records, then escalate if the explanation does not match policy.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Clarification can be useful, but the pattern should not remain informal if the red flag persists.",
+      },
+      {
+        id: "M06-C",
+        text: "Ignore it because the total amount is not very large.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Small control breaches can become normalised and may conceal larger misconduct.",
+      },
+      {
+        id: "M06-D",
+        text: "Tell the staff member to use your cost centre next time so the pattern is less visible.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "Helping to conceal a control breach makes you part of the misconduct risk.",
+      },
     ],
-    correctAnswer:
-      "Reject or hold the claim pending verification and supporting evidence",
-    explanation:
-      "Payment claims should be supported by verified completion records and approved documentation.",
-    whyItMatters:
-      "False or premature claims can cause financial loss and weaken project governance.",
-    redFlag: "Claimed progress does not match independent site records.",
-    points: 10,
   },
   {
-    id: "Q007",
-    category: "ABMS ISO 37001",
-    difficulty: "Medium",
+    id: "M07",
+    theme: "Abuse of Power",
+    subScore: "Integrity Judgment",
+    location: "Leadership Conduct Room",
     question:
-      "Why does an Anti-Bribery Management System require documented controls and evidence?",
+      "A manager asks a project vendor to do minor renovation work at the manager's private home, saying it will help the vendor maintain a good relationship with the organisation. What is the right response?",
     options: [
-      "To make audits longer",
-      "To show decisions are controlled, traceable, and consistently applied",
-      "To replace the need for ethical judgement",
-      "To allow exceptions without approval",
+      {
+        id: "M07-A",
+        text: "Treat it as abuse of power and a potential improper advantage, then escalate through Integrity or Compliance.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Using position to obtain private benefit from a vendor is a serious integrity red flag.",
+      },
+      {
+        id: "M07-B",
+        text: "Advise the manager not to proceed and record that guidance with an appropriate superior.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Stopping the conduct is helpful, but the risk may require independent review because a vendor is involved.",
+      },
+      {
+        id: "M07-C",
+        text: "Allow it if the manager pays market price directly to the vendor.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Even paid private work can create coercion or perceived influence when a vendor depends on the organisation.",
+      },
+      {
+        id: "M07-D",
+        text: "Tell the vendor to absorb the cost because future projects may be awarded.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "This is coercive and could amount to bribery, extortion, or abuse of authority.",
+      },
     ],
-    correctAnswer:
-      "To show decisions are controlled, traceable, and consistently applied",
-    explanation:
-      "ABMS controls rely on evidence, accountability, and continual improvement to manage bribery risk.",
-    whyItMatters:
-      "Documentation helps prove that prevention, detection, and response processes are operating.",
-    redFlag: "Important approvals or declarations are handled informally with no record.",
-    points: 10,
   },
   {
-    id: "Q008",
-    category: "Ethical Decision-Making",
-    difficulty: "Easy",
+    id: "M08",
+    theme: "Site Verification",
+    subScore: "Policy Awareness",
+    location: "Project Site Verification",
     question:
-      "You are unsure whether an invitation from a stakeholder breaches policy. What should you do first?",
+      "You are asked to sign a site verification checklist remotely for completed works you have not inspected. The project team says management needs the file closed today. What should you do?",
     options: [
-      "Accept now and ask questions later",
-      "Check the policy and seek guidance before responding",
-      "Decline rudely so there is no risk",
-      "Ask a friend outside the organisation to decide",
+      {
+        id: "M08-A",
+        text: "Refuse to certify unverified work, arrange proper inspection, and escalate the deadline pressure if needed.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Certification must be based on actual verification. Deadline pressure does not justify false confirmation.",
+      },
+      {
+        id: "M08-B",
+        text: "State clearly that you can only sign after receiving approved inspection evidence from an authorised verifier.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Evidence from an authorised verifier may support the process, but blind certification remains unacceptable.",
+      },
+      {
+        id: "M08-C",
+        text: "Sign first and inspect later because the work is probably complete.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Backfilling verification exposes the organisation to false claim, safety, and audit risks.",
+      },
+      {
+        id: "M08-D",
+        text: "Use last month's photos and change the checklist date to today.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "Reusing outdated evidence and changing dates falsifies records.",
+      },
     ],
-    correctAnswer: "Check the policy and seek guidance before responding",
-    explanation:
-      "When unsure, pause, check the relevant policy, and seek guidance from the appropriate authority.",
-    whyItMatters:
-      "Good decisions are made before pressure builds, not after commitments are made.",
-    redFlag: "A decision feels rushed, unclear, or outside normal approval channels.",
-    points: 10,
   },
   {
-    id: "Q009",
-    category: "Anti-Bribery",
-    difficulty: "Hard",
+    id: "M09",
+    theme: "Confidential Information Leakage",
+    subScore: "Conflict Radar",
+    location: "Information Security Desk",
     question:
-      "A third-party agent asks for a success fee that is unusually high and refuses to describe the services provided. What should happen next?",
+      "A former colleague who now works for a bidder asks you on WhatsApp for the internal budget range and evaluation emphasis for an upcoming tender. What is your decision?",
     options: [
-      "Approve it because success fees are normal",
-      "Perform enhanced due diligence and pause engagement until concerns are resolved",
-      "Split the fee across several purchase orders",
-      "Ask the agent to keep the details outside email",
+      {
+        id: "M09-A",
+        text: "Decline to share non-public information and remind them that all bidders must use official procurement channels.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Confidential tender information must be protected to preserve fairness and due diligence.",
+      },
+      {
+        id: "M09-B",
+        text: "Tell Procurement that an information request was made and ask whether a general clarification should be issued to all bidders.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "Escalating the request helps ensure any approved information is shared equally.",
+      },
+      {
+        id: "M09-C",
+        text: "Share only broad hints because you are not sending the actual tender document.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Hints can still give one bidder an unfair advantage and create leakage risk.",
+      },
+      {
+        id: "M09-D",
+        text: "Send screenshots and ask them to delete the messages after reading.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "This intentionally leaks confidential procurement information and undermines competition.",
+      },
     ],
-    correctAnswer:
-      "Perform enhanced due diligence and pause engagement until concerns are resolved",
-    explanation:
-      "Unclear services and excessive fees are bribery red flags requiring due diligence and escalation.",
-    whyItMatters:
-      "Organisations can be liable for improper acts by agents acting on their behalf.",
-    redFlag: "High commission with vague scope of work or resistance to transparency.",
-    points: 10,
   },
   {
-    id: "Q010",
-    category: "Gift & Hospitality",
-    difficulty: "Medium",
+    id: "M10",
+    theme: "Pressure from Superior",
+    subScore: "Escalation Courage",
+    location: "Executive Pressure Scenario",
     question:
-      "A supplier invites your evaluation team to an overseas golf weekend after tender submission. What is the right response?",
+      "Your superior asks you to backdate a conflict declaration and payment approval so the audit file appears complete before an ABMS review. How should you respond?",
     options: [
-      "Accept because it builds relationships",
-      "Decline and record the offer according to policy",
-      "Send only junior staff to avoid attention",
-      "Accept if the supplier pays directly",
+      {
+        id: "M10-A",
+        text: "Decline to falsify records, document the request, and seek guidance from Integrity, Compliance, or an appropriate higher authority.",
+        points: 10,
+        feedback: "Correct",
+        quality: "Best answer",
+        explanation:
+          "Accurate records are core to ABMS. Senior pressure does not justify falsification.",
+      },
+      {
+        id: "M10-B",
+        text: "Ask to submit a current-date declaration with a note explaining why it is late.",
+        points: 6,
+        feedback: "Correct",
+        quality: "Acceptable answer",
+        explanation:
+          "A transparent late record is better than a false one, but the pressure to backdate should still be escalated.",
+      },
+      {
+        id: "M10-C",
+        text: "Backdate only the declaration, not the payment approval, because the review deadline is urgent.",
+        points: 3,
+        feedback: "Risky",
+        quality: "Risky answer",
+        explanation:
+          "Partial falsification is still falsification and can mislead reviewers.",
+      },
+      {
+        id: "M10-D",
+        text: "Backdate both records because refusing a superior may affect your performance rating.",
+        points: 0,
+        feedback: "Wrong",
+        quality: "Wrong answer",
+        explanation:
+          "Fear of consequences does not justify creating false documents.",
+      },
     ],
-    correctAnswer: "Decline and record the offer according to policy",
-    explanation:
-      "Lavish hospitality during a tender creates a serious perception of influence and should be declined and recorded.",
-    whyItMatters:
-      "Procurement decisions must be free from benefits that could bias evaluators.",
-    redFlag: "Entertainment offered to decision makers during an active tender.",
-    points: 10,
-  },
-  {
-    id: "Q011",
-    category: "Conflict of Interest",
-    difficulty: "Medium",
-    question:
-      "You hold shares in a company being considered for a service contract you will help approve. What should you do?",
-    options: [
-      "Declare the interest before participating in the decision",
-      "Sell the shares quietly after approval",
-      "Vote in favour if the company is qualified",
-      "Ask someone else to sign while you influence the discussion",
-    ],
-    correctAnswer: "Declare the interest before participating in the decision",
-    explanation:
-      "Financial interests can create actual or perceived conflict and must be declared promptly.",
-    whyItMatters:
-      "Disclosure allows the organisation to manage independence and protect the decision.",
-    redFlag: "Personal financial benefit linked to an organisation decision.",
-    points: 10,
-  },
-  {
-    id: "Q012",
-    category: "Whistleblowing",
-    difficulty: "Medium",
-    question:
-      "A team member says they fear retaliation if they report suspected bid manipulation. What should you advise?",
-    options: [
-      "Stay silent unless they have perfect proof",
-      "Use the approved reporting channel and keep details factual",
-      "Confront every person involved publicly",
-      "Send an anonymous message to all vendors",
-    ],
-    correctAnswer: "Use the approved reporting channel and keep details factual",
-    explanation:
-      "Good-faith concerns can be reported through approved channels, with facts and supporting information where available.",
-    whyItMatters:
-      "Protected channels help concerns reach the right reviewers while reducing retaliation risk.",
-    redFlag: "Fear of retaliation preventing a legitimate concern from being raised.",
-    points: 10,
-  },
-  {
-    id: "Q013",
-    category: "Procurement Integrity",
-    difficulty: "Hard",
-    question:
-      "Two bidders submit proposals with identical wording, formatting errors, and contact details. What is the best action?",
-    options: [
-      "Ignore it if both prices are competitive",
-      "Flag the pattern for review under procurement and integrity procedures",
-      "Select the cheaper one immediately",
-      "Ask one bidder to rewrite their proposal after closing",
-    ],
-    correctAnswer:
-      "Flag the pattern for review under procurement and integrity procedures",
-    explanation:
-      "Similar bids may indicate collusion, shared preparation, or compromised competition and should be reviewed.",
-    whyItMatters:
-      "Procurement integrity depends on fair, independent, and competitive submissions.",
-    redFlag: "Bids appear coordinated or prepared by the same source.",
-    points: 10,
-  },
-  {
-    id: "Q014",
-    category: "False Claims / Payment Risk",
-    difficulty: "Easy",
-    question:
-      "A staff member submits mileage claims for days they worked from home. What is the right action?",
-    options: [
-      "Approve because the amount is small",
-      "Ask for clarification and reject unsupported claims",
-      "Tell them to add meal claims too",
-      "Ignore because travel claims are personal matters",
-    ],
-    correctAnswer: "Ask for clarification and reject unsupported claims",
-    explanation:
-      "Claims must reflect actual, authorised business expenses and be supported by accurate records.",
-    whyItMatters:
-      "Small false claims can normalise misconduct and weaken control culture.",
-    redFlag: "Claimed expense conflicts with attendance or work-location records.",
-    points: 10,
-  },
-  {
-    id: "Q015",
-    category: "ABMS ISO 37001",
-    difficulty: "Easy",
-    question:
-      "Which behaviour best supports an anti-bribery management system?",
-    options: [
-      "Keeping decisions verbal to stay flexible",
-      "Declaring gifts, conflicts, and concerns through approved records",
-      "Allowing senior staff to bypass controls",
-      "Using personal email for sensitive approvals",
-    ],
-    correctAnswer: "Declaring gifts, conflicts, and concerns through approved records",
-    explanation:
-      "An ABMS depends on clear records, controls, reporting, and leadership commitment.",
-    whyItMatters:
-      "Consistent declarations help the organisation prevent and detect bribery risks.",
-    redFlag: "Controls are bypassed because a situation feels urgent or senior.",
-    points: 10,
-  },
-  {
-    id: "Q016",
-    category: "Ethical Decision-Making",
-    difficulty: "Medium",
-    question:
-      "Your manager asks you to backdate a declaration form so an approval file looks complete. What should you do?",
-    options: [
-      "Backdate it because your manager instructed you",
-      "Decline to falsify the record and seek guidance",
-      "Backdate it only if no payment has been made",
-      "Use a different pen so it looks older",
-    ],
-    correctAnswer: "Decline to falsify the record and seek guidance",
-    explanation:
-      "Records must be accurate. Pressure from a superior does not justify falsification.",
-    whyItMatters:
-      "Accurate records support accountability, auditability, and trust in decisions.",
-    redFlag: "Pressure to change dates, approvals, or records after the fact.",
-    points: 10,
-  },
-  {
-    id: "Q017",
-    category: "Anti-Bribery",
-    difficulty: "Medium",
-    question:
-      "A stakeholder hints that approval will be easier if you sponsor their private event. What is the right call?",
-    options: [
-      "Sponsor the event if the invoice looks official",
-      "Treat it as a potential improper advantage and escalate",
-      "Offer a smaller sponsorship personally",
-      "Wait until approval is granted, then sponsor",
-    ],
-    correctAnswer: "Treat it as a potential improper advantage and escalate",
-    explanation:
-      "Sponsorship linked to official approval can be an improper benefit and should be escalated.",
-    whyItMatters:
-      "Business contributions must not be used to influence decisions or obtain advantages.",
-    redFlag: "A requested benefit is connected to approval or favourable treatment.",
-    points: 10,
-  },
-  {
-    id: "Q018",
-    category: "Gift & Hospitality",
-    difficulty: "Easy",
-    question:
-      "A low-value meal is offered after a routine meeting with no pending decision. What should you consider?",
-    options: [
-      "Whether policy allows it and whether it creates any perception risk",
-      "Whether you can order the most expensive item",
-      "Whether the vendor will also pay for your family",
-      "Whether it can be hidden from your declaration record",
-    ],
-    correctAnswer:
-      "Whether policy allows it and whether it creates any perception risk",
-    explanation:
-      "Even modest hospitality should be checked against policy, context, frequency, and perception.",
-    whyItMatters:
-      "Appropriate boundaries preserve professional relationships without creating undue influence.",
-    redFlag: "Repeated meals or hospitality from the same party without clear business purpose.",
-    points: 10,
-  },
-  {
-    id: "Q019",
-    category: "Conflict of Interest",
-    difficulty: "Hard",
-    question:
-      "A committee member does not vote but strongly promotes a proposal from a company owned by their close friend. What is the concern?",
-    options: [
-      "No concern because they did not vote",
-      "A perceived or potential conflict can still influence the committee",
-      "Only finance staff can have conflicts",
-      "Friendships never need to be declared",
-    ],
-    correctAnswer:
-      "A perceived or potential conflict can still influence the committee",
-    explanation:
-      "Influence is broader than formal voting. Relationships should be declared and managed.",
-    whyItMatters:
-      "Undeclared interests can undermine confidence even if the final decision appears fair.",
-    redFlag: "Someone advocates strongly for a party they are personally connected to.",
-    points: 10,
-  },
-  {
-    id: "Q020",
-    category: "Whistleblowing",
-    difficulty: "Hard",
-    question:
-      "You receive a whistleblowing report naming your close colleague. What should you do if you are asked to help assess it?",
-    options: [
-      "Assess it yourself to protect your colleague",
-      "Declare the relationship and let an independent reviewer handle it",
-      "Warn your colleague immediately",
-      "Delete the report if evidence looks incomplete",
-    ],
-    correctAnswer:
-      "Declare the relationship and let an independent reviewer handle it",
-    explanation:
-      "A relationship with a subject of a report can compromise independence and must be declared.",
-    whyItMatters:
-      "Whistleblowing processes need impartial handling and protection of confidentiality.",
-    redFlag: "The reviewer has a personal connection to a person named in the report.",
-    points: 10,
-  },
-  {
-    id: "Q021",
-    category: "Procurement Integrity",
-    difficulty: "Medium",
-    question:
-      "A project team wants to tailor technical specifications so only one preferred supplier can qualify. What should you do?",
-    options: [
-      "Proceed because the team knows what it wants",
-      "Challenge the requirement and ensure specifications are fair, justified, and documented",
-      "Tell the preferred supplier before publishing",
-      "Remove all specifications",
-    ],
-    correctAnswer:
-      "Challenge the requirement and ensure specifications are fair, justified, and documented",
-    explanation:
-      "Specifications should reflect legitimate business needs and avoid unjustified restrictions.",
-    whyItMatters:
-      "Biased specifications can exclude capable bidders and create procurement integrity risk.",
-    redFlag: "Requirements appear designed around one supplier without clear justification.",
-    points: 10,
-  },
-  {
-    id: "Q022",
-    category: "False Claims / Payment Risk",
-    difficulty: "Hard",
-    question:
-      "A vendor asks to be paid to a new bank account that does not match contract records. What is the safest response?",
-    options: [
-      "Update the bank details immediately to avoid late payment",
-      "Verify the request through approved vendor-change controls before payment",
-      "Ask the requester to confirm by text message only",
-      "Split the payment between both accounts",
-    ],
-    correctAnswer:
-      "Verify the request through approved vendor-change controls before payment",
-    explanation:
-      "Changes to payment details require independent verification and approved controls before funds are released.",
-    whyItMatters:
-      "Unverified bank changes can lead to fraud, misdirected funds, and recovery difficulties.",
-    redFlag: "Urgent payment request with changed banking details.",
-    points: 10,
-  },
-  {
-    id: "Q023",
-    category: "ABMS ISO 37001",
-    difficulty: "Hard",
-    question:
-      "During an internal review, a team cannot show evidence that high-risk vendors were screened. What should happen?",
-    options: [
-      "Assume screening was done because vendors were approved",
-      "Record the gap, assess risk, and complete corrective action",
-      "Create screening records with old dates",
-      "Stop all vendor onboarding permanently",
-    ],
-    correctAnswer: "Record the gap, assess risk, and complete corrective action",
-    explanation:
-      "ABMS gaps should be documented, assessed, corrected, and monitored for improvement.",
-    whyItMatters:
-      "Corrective action strengthens controls and reduces repeated bribery risk exposure.",
-    redFlag: "High-risk activities continue without evidence of required checks.",
-    points: 10,
-  },
-  {
-    id: "Q024",
-    category: "Ethical Decision-Making",
-    difficulty: "Hard",
-    question:
-      "A deadline is at risk and a colleague suggests skipping required approval because everyone agrees with the decision. What should you do?",
-    options: [
-      "Skip approval because consensus is enough",
-      "Follow the required approval route or escalate for an approved exception",
-      "Ask one person to approve using another person's login",
-      "Complete the work first and create approval later",
-    ],
-    correctAnswer:
-      "Follow the required approval route or escalate for an approved exception",
-    explanation:
-      "Urgency does not remove the need for proper authority. Approved exception routes should be used where available.",
-    whyItMatters:
-      "Controls protect decisions under pressure, especially when deadlines create shortcuts.",
-    redFlag: "Pressure to bypass approvals because of time constraints.",
-    points: 10,
   },
 ];
 
-export const getRandomQuestions = (count = 10) => {
-  return [...questions].sort(() => Math.random() - 0.5).slice(0, count);
-};
+export const getMissionQuestions = () => missionQuestions;
