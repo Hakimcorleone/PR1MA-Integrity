@@ -100,6 +100,7 @@ const App = () => {
 
     const updatedLeaderboard = saveResultToLeaderboard({
       name: game.player.name,
+      department: game.player.department,
       division: game.player.division,
       role: game.player.role,
       outlookEmail: game.player.outlookEmail,
