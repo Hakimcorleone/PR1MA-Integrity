@@ -48,7 +48,7 @@ const AvatarBadge = ({ avatar = defaultAvatar, name = "Player", size = "md" }) =
       </div>
       <div className="min-w-0">
         <p className="truncate text-sm font-bold text-inherit">{avatar.codename}</p>
-        <div className="mt-1 flex items-center gap-1 text-xs font-semibold text-inherit/70">
+        <div className="mt-1 flex items-center gap-1 text-xs font-semibold opacity-70">
           <Sparkles className="h-3 w-3" aria-hidden="true" />
           <span>{avatar.signal}</span>
         </div>
