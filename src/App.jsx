@@ -1,183 +1,189 @@
-import { useMemo, useState } from "react";
-import AdventureMap from "./components/AdventureMap.jsx";
-import Leaderboard from "./components/Leaderboard.jsx";
-import PlayerSetup from "./components/PlayerSetup.jsx";
+import { useEffect, useMemo, useState } from "react";
+import AdminDashboard from "./components/AdminDashboard.jsx";
+import MissionScreen from "./components/AdventureMap.jsx";
+import ParticipantDetails from "./components/PlayerSetup.jsx";
 import ResultScreen from "./components/ResultScreen.jsx";
 import StartScreen from "./components/StartScreen.jsx";
-import { getRandomQuestions } from "./data/questions.js";
-import { getBadgesForResult } from "./data/quests.js";
+import { getMissionQuestions } from "./data/questions.js";
 import {
-  calculateCategoryPerformance,
   calculateScore,
-  getImprovementSuggestion,
-  getIntegrityProfile,
+  calculateSubScores,
+  getBadgeByScore,
+  getRecommendation,
 } from "./utils/scoring.js";
-import {
-  clearLeaderboard,
-  getLeaderboard,
-  saveResultToLeaderboard,
-} from "./utils/storage.js";
+import { saveMissionResult } from "./utils/storage.js";
 
-const initialGameState = {
-  player: null,
-  questions: [],
+const initialMissionState = {
+  participant: null,
+  questions: getMissionQuestions(),
   currentQuestionIndex: 0,
   answers: [],
-  selectedAnswer: "",
-  score: null,
-  profile: null,
-  categoryPerformance: [],
-  suggestion: "",
-  badges: [],
+  selectedOptionId: "",
+  result: null,
 };
 
 const App = () => {
+  const [path, setPath] = useState(() => window.location.pathname);
   const [screen, setScreen] = useState("start");
-  const [game, setGame] = useState(initialGameState);
-  const [leaderboard, setLeaderboard] = useState(() => getLeaderboard());
+  const [mission, setMission] = useState(initialMissionState);
+  const [resultSaved, setResultSaved] = useState(false);
+
+  useEffect(() => {
+    const handlePopState = () => setPath(window.location.pathname);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  const navigate = (nextPath) => {
+    window.history.pushState({}, "", nextPath);
+    setPath(nextPath);
+  };
 
   const currentQuestion = useMemo(() => {
-    return game.questions[game.currentQuestionIndex];
-  }, [game.currentQuestionIndex, game.questions]);
+    return mission.questions[mission.currentQuestionIndex];
+  }, [mission.currentQuestionIndex, mission.questions]);
 
-  const correctCount = useMemo(() => {
-    return game.answers.filter((answer) => answer.isCorrect).length;
-  }, [game.answers]);
+  const currentEarned = useMemo(() => {
+    return mission.answers.reduce((sum, answer) => sum + answer.points, 0);
+  }, [mission.answers]);
 
   const startSetup = () => {
-    setGame(initialGameState);
+    setMission({
+      ...initialMissionState,
+      questions: getMissionQuestions(),
+    });
+    setResultSaved(false);
     setScreen("setup");
   };
 
-  const beginQuiz = (player) => {
-    setGame({
-      ...initialGameState,
-      player,
-      questions: getRandomQuestions(10),
+  const beginMission = (participant) => {
+    setMission({
+      ...initialMissionState,
+      participant,
+      questions: getMissionQuestions(),
     });
-    setScreen("adventure");
+    setResultSaved(false);
+    setScreen("mission");
   };
 
-  const handleAnswer = (selectedAnswer) => {
-    if (game.selectedAnswer || !currentQuestion) {
+  const handleAnswer = (selectedOptionId) => {
+    if (mission.selectedOptionId || !currentQuestion) {
       return;
     }
 
-    setGame((current) => ({
+    setMission((current) => ({
       ...current,
-      selectedAnswer,
+      selectedOptionId,
     }));
   };
 
   const handleNextQuestion = () => {
-    const answer = {
-      question: currentQuestion,
-      selectedAnswer: game.selectedAnswer,
-      isCorrect: game.selectedAnswer === currentQuestion.correctAnswer,
-    };
+    const selectedOption = currentQuestion.options.find(
+      (option) => option.id === mission.selectedOptionId,
+    );
 
-    const answers = [...game.answers, answer];
-    const isFinalQuestion = game.currentQuestionIndex === game.questions.length - 1;
+    if (!selectedOption) {
+      return;
+    }
+
+    const answer = {
+      questionId: currentQuestion.id,
+      theme: currentQuestion.theme,
+      question: currentQuestion.question,
+      subScore: currentQuestion.subScore,
+      selectedOptionId: selectedOption.id,
+      selectedOption: selectedOption.text,
+      points: selectedOption.points,
+      feedback: selectedOption.feedback,
+      quality: selectedOption.quality,
+    };
+    const answers = [...mission.answers, answer];
+    const isFinalQuestion =
+      mission.currentQuestionIndex === mission.questions.length - 1;
 
     if (!isFinalQuestion) {
-      setGame((current) => ({
+      setMission((current) => ({
         ...current,
         answers,
-        selectedAnswer: "",
+        selectedOptionId: "",
         currentQuestionIndex: current.currentQuestionIndex + 1,
       }));
       return;
     }
 
     const score = calculateScore(answers);
-    const profile = getIntegrityProfile(score.percentage);
-    const categoryPerformance = calculateCategoryPerformance(answers);
-    const suggestion = getImprovementSuggestion(
-      score.percentage,
-      categoryPerformance,
-    );
-    const badges = getBadgesForResult(score.percentage, answers);
+    const subScores = calculateSubScores(answers);
+    const badge = getBadgeByScore(score.percentage);
+    const recommendation = getRecommendation(subScores);
+    const result = {
+      participant: mission.participant,
+      score,
+      badge,
+      subScores,
+      recommendation,
+      answers,
+    };
 
-    const updatedLeaderboard = saveResultToLeaderboard({
-      name: game.player.name,
-      department: game.player.department,
-      division: game.player.division,
-      role: game.player.role,
-      outlookEmail: game.player.outlookEmail,
-      avatar: game.player.avatar,
-      earned: score.earned,
-      totalPossible: score.totalPossible,
-      percentage: score.percentage,
-      profileTitle: profile.title,
-      categoryPerformance,
-      badges,
-    });
-
-    setLeaderboard(updatedLeaderboard);
-    setGame((current) => ({
+    setMission((current) => ({
       ...current,
       answers,
-      score,
-      profile,
-      categoryPerformance,
-      suggestion,
-      badges,
+      result,
     }));
+    setResultSaved(false);
     setScreen("result");
   };
 
-  const showLeaderboard = () => {
-    setLeaderboard(getLeaderboard());
-    setScreen("leaderboard");
+  const handleSaveResult = () => {
+    if (!mission.result || resultSaved) {
+      return;
+    }
+
+    saveMissionResult(mission.result);
+    setResultSaved(true);
   };
 
-  const handleClearLeaderboard = () => {
-    clearLeaderboard();
-    setLeaderboard([]);
-  };
+  if (path === "/admin") {
+    return (
+      <div className="app-shell">
+        <AdminDashboard onBack={() => navigate("/")} />
+      </div>
+    );
+  }
 
   return (
     <div className="app-shell">
       {screen === "start" ? (
-        <StartScreen onStart={startSetup} onShowLeaderboard={showLeaderboard} />
+        <StartScreen onStart={startSetup} onAdmin={() => navigate("/admin")} />
       ) : null}
 
       {screen === "setup" ? (
-        <PlayerSetup onBack={() => setScreen("start")} onSubmit={beginQuiz} />
+        <ParticipantDetails
+          onBack={() => setScreen("start")}
+          onSubmit={beginMission}
+        />
       ) : null}
 
-      {screen === "adventure" && currentQuestion ? (
-        <AdventureMap
-          player={game.player}
-          correctCount={correctCount}
+      {screen === "mission" && currentQuestion ? (
+        <MissionScreen
+          participant={mission.participant}
           question={currentQuestion}
-          questionNumber={game.currentQuestionIndex + 1}
-          totalQuestions={game.questions.length}
-          selectedAnswer={game.selectedAnswer}
+          questionNumber={mission.currentQuestionIndex + 1}
+          totalQuestions={mission.questions.length}
+          selectedOptionId={mission.selectedOptionId}
+          currentEarned={currentEarned}
           onAnswer={handleAnswer}
           onNext={handleNextQuestion}
         />
       ) : null}
 
-      {screen === "result" && game.score ? (
+      {screen === "result" && mission.result ? (
         <ResultScreen
-          player={game.player}
-          score={game.score}
-          profile={game.profile}
-          categoryPerformance={game.categoryPerformance}
-          suggestion={game.suggestion}
-          badges={game.badges}
-          onRetake={startSetup}
-          onLeaderboard={showLeaderboard}
-        />
-      ) : null}
-
-      {screen === "leaderboard" ? (
-        <Leaderboard
-          entries={leaderboard}
-          onBack={() => setScreen(game.score ? "result" : "start")}
-          onRetake={startSetup}
-          onClear={handleClearLeaderboard}
+          result={mission.result}
+          saved={resultSaved}
+          onRestart={startSetup}
+          onSave={handleSaveResult}
+          onAdmin={() => navigate("/admin")}
         />
       ) : null}
     </div>
