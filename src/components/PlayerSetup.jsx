@@ -85,10 +85,10 @@ const PlayerSetup = ({ onBack, onSubmit }) => {
               Agent Profile
             </p>
             <h1 className="mt-2 text-3xl font-semibold tracking-normal text-navy-950">
-              Create your integrity avatar
+              Create your adventure avatar
             </h1>
             <p className="mt-3 text-sm leading-6 text-slate-600">
-              Pick a mission identity, then enter the challenge room.
+              Pick a mission identity before walking into the Integrity District.
             </p>
 
             <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
@@ -246,10 +246,10 @@ const PlayerSetup = ({ onBack, onSubmit }) => {
             <button
               type="submit"
               disabled={!canSubmit}
-              title="Begin mission"
+              title="Enter district"
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-navy-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-navy-800 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
             >
-              Enter Mission
+              Enter District
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
           </form>
