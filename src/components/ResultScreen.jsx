@@ -39,7 +39,7 @@ const ResultScreen = ({
               <p className="text-sm font-semibold text-slate-300">Agent</p>
               <p className="mt-1 text-xl font-bold">{player.name}</p>
               <p className="mt-2 text-sm text-slate-300">
-                {player.division} | {player.role}
+                {player.department || "Department"} | {player.division} | {player.role}
               </p>
               <div className="mt-4 inline-flex max-w-full items-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm text-slate-100">
                 <Mail className="h-4 w-4 flex-none text-amber-200" aria-hidden="true" />
