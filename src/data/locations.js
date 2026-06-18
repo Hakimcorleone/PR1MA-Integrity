@@ -1,0 +1,90 @@
+export const integrityDistrictLocations = [
+  {
+    id: "hq",
+    name: "Integrity HQ",
+    type: "Command Base",
+    x: 50,
+    y: 48,
+    categoryFocus: "Ethical Decision-Making",
+    description: "Start here, review your mission brief, and decide where to investigate next.",
+    clue: "Good calls begin with a pause before action.",
+  },
+  {
+    id: "procurement",
+    name: "Procurement Wing",
+    type: "Tender Zone",
+    x: 22,
+    y: 28,
+    categoryFocus: "Procurement Integrity",
+    description: "Tender documents, bidder questions, and evaluation pressure meet here.",
+    clue: "Watch for unfair access, biased specs, and unusual similarities.",
+  },
+  {
+    id: "finance",
+    name: "Finance Desk",
+    type: "Payment Gate",
+    x: 78,
+    y: 30,
+    categoryFocus: "False Claims / Payment Risk",
+    description: "Claims, invoices, progress records, and payment changes pass through this desk.",
+    clue: "Evidence should match the claim before money moves.",
+  },
+  {
+    id: "site",
+    name: "Project Site",
+    type: "Field Checkpoint",
+    x: 20,
+    y: 74,
+    categoryFocus: "False Claims / Payment Risk",
+    description: "Site progress, technical sign-offs, and ground reality are tested here.",
+    clue: "A clean file means little if the site tells a different story.",
+  },
+  {
+    id: "hotline",
+    name: "Speak-Up Point",
+    type: "Whistleblowing",
+    x: 52,
+    y: 78,
+    categoryFocus: "Whistleblowing",
+    description: "Concerns can be raised safely when people know the proper channel.",
+    clue: "Facts, confidentiality, and non-retaliation matter.",
+  },
+  {
+    id: "abms",
+    name: "ABMS Lab",
+    type: "Control Room",
+    x: 82,
+    y: 70,
+    categoryFocus: "ABMS ISO 37001",
+    description: "Controls, records, evidence, and corrective actions are tested here.",
+    clue: "If it is not evidenced, it is hard to prove it happened.",
+  },
+  {
+    id: "committee",
+    name: "Decision Chamber",
+    type: "Approval Room",
+    x: 68,
+    y: 51,
+    categoryFocus: "Conflict of Interest",
+    description: "Declarations, influence, and independence decide whether trust holds.",
+    clue: "Not voting does not always remove influence.",
+  },
+  {
+    id: "vendor",
+    name: "Vendor Gate",
+    type: "External Party",
+    x: 45,
+    y: 19,
+    categoryFocus: "Gift & Hospitality",
+    description: "Offers, hospitality, agents, and third-party requests arrive here.",
+    clue: "Timing and intention can turn a benefit into a red flag.",
+  },
+];
+
+export const getLocationByCategory = (category) => {
+  return (
+    integrityDistrictLocations.find((location) =>
+      category.includes(location.categoryFocus),
+    ) || integrityDistrictLocations[0]
+  );
+};
