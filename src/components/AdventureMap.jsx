@@ -1,0 +1,373 @@
+import {
+  AlertTriangle,
+  ArrowRight,
+  BadgeCheck,
+  Building2,
+  CheckCircle2,
+  ClipboardList,
+  Construction,
+  Footprints,
+  Landmark,
+  MailWarning,
+  MapPin,
+  Radio,
+  ShieldAlert,
+  Store,
+  UsersRound,
+  WalletCards,
+  XCircle,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  getLocationByCategory,
+  integrityDistrictLocations,
+} from "../data/locations.js";
+
+const locationIcons = {
+  hq: Building2,
+  procurement: ClipboardList,
+  finance: WalletCards,
+  site: Construction,
+  hotline: Radio,
+  abms: BadgeCheck,
+  committee: UsersRound,
+  vendor: Store,
+};
+
+const optionClass = (option, selectedAnswer, correctAnswer) => {
+  const answered = Boolean(selectedAnswer);
+  const isSelected = selectedAnswer === option;
+  const isCorrect = correctAnswer === option;
+
+  if (!answered) {
+    return "border-slate-200 bg-white text-slate-800 hover:border-amberAccent hover:bg-amber-50";
+  }
+
+  if (isCorrect) {
+    return "border-success bg-emerald-50 text-emerald-950";
+  }
+
+  if (isSelected && !isCorrect) {
+    return "border-risk bg-orange-50 text-orange-950";
+  }
+
+  return "border-slate-200 bg-slate-50 text-slate-500";
+};
+
+const MiniAvatar = ({ avatar, name }) => {
+  return (
+    <div className="relative flex flex-col items-center gap-1">
+      <div
+        className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-4 border-white shadow-soft"
+        style={{ background: avatar?.suit || "#0b2c4d" }}
+      >
+        <div className="absolute top-2 h-5 w-5 rounded-full bg-white/95" />
+        <div className="absolute bottom-2 h-6 w-9 rounded-t-full bg-white/90" />
+        <div
+          className="absolute bottom-1 right-1 h-4 w-4 rounded-full border border-white"
+          style={{ background: avatar?.accent || "#d7a12b" }}
+        />
+      </div>
+      <span className="rounded-full bg-navy-950 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white shadow-soft">
+        {name || "You"}
+      </span>
+    </div>
+  );
+};
+
+const AdventureMap = ({
+  player,
+  correctCount,
+  question,
+  questionNumber,
+  totalQuestions,
+  selectedAnswer,
+  onAnswer,
+  onNext,
+}) => {
+  const suggestedLocation = useMemo(
+    () => getLocationByCategory(question.category),
+    [question.category],
+  );
+  const [activeLocation, setActiveLocation] = useState(suggestedLocation);
+  const [visitedLocations, setVisitedLocations] = useState([suggestedLocation.id]);
+
+  const answered = Boolean(selectedAnswer);
+  const isCorrect = selectedAnswer === question.correctAnswer;
+  const progress = Math.round((questionNumber / totalQuestions) * 100);
+  const missionCorrectCount = correctCount + (answered && isCorrect ? 1 : 0);
+
+  useEffect(() => {
+    setActiveLocation(suggestedLocation);
+    setVisitedLocations((current) =>
+      current.includes(suggestedLocation.id)
+        ? current
+        : [...current, suggestedLocation.id],
+    );
+  }, [suggestedLocation]);
+
+  const handleLocationClick = (location) => {
+    setActiveLocation(location);
+    setVisitedLocations((current) =>
+      current.includes(location.id) ? current : [...current, location.id],
+    );
+  };
+
+  return (
+    <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-6 text-white sm:px-6 lg:px-8">
+      <header className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-amber-200">
+            Integrity District Adventure
+          </p>
+          <h1 className="mt-2 text-2xl font-semibold tracking-normal sm:text-3xl">
+            Walk the case. Find the right call.
+          </h1>
+        </div>
+        <div className="grid grid-cols-3 gap-2 text-center sm:min-w-[360px]">
+          <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+              Case
+            </p>
+            <p className="mt-1 text-lg font-bold">
+              {questionNumber}/{totalQuestions}
+            </p>
+          </div>
+          <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+              Calls
+            </p>
+            <p className="mt-1 text-lg font-bold">{missionCorrectCount}</p>
+          </div>
+          <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
+              XP
+            </p>
+            <p className="mt-1 text-lg font-bold">{missionCorrectCount * 10}</p>
+          </div>
+        </div>
+      </header>
+
+      <section className="grid flex-1 gap-5 py-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
+        <div className="overflow-hidden rounded-lg border border-white/12 bg-white/8 shadow-soft backdrop-blur">
+          <div className="flex flex-col gap-3 border-b border-white/10 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-200">
+                Explore Map
+              </p>
+              <p className="mt-1 text-sm text-slate-200">
+                Click a location to walk there and investigate the current case.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white">
+              <Footprints className="h-4 w-4 text-amber-200" aria-hidden="true" />
+              {visitedLocations.length}/{integrityDistrictLocations.length} visited
+            </div>
+          </div>
+
+          <div className="adventure-map relative min-h-[520px] overflow-hidden sm:min-h-[600px]">
+            <div className="absolute left-[9%] top-[44%] h-3 w-[82%] rotate-[-7deg] rounded-full bg-white/12" />
+            <div className="absolute left-[18%] top-[18%] h-[70%] w-3 rotate-[18deg] rounded-full bg-white/10" />
+            <div className="absolute left-[47%] top-[12%] h-[78%] w-3 rotate-[-2deg] rounded-full bg-white/10" />
+            <div className="absolute left-[62%] top-[23%] h-[58%] w-3 rotate-[22deg] rounded-full bg-white/10" />
+
+            {integrityDistrictLocations.map((location) => {
+              const Icon = locationIcons[location.id] || MapPin;
+              const isActive = activeLocation.id === location.id;
+              const isVisited = visitedLocations.includes(location.id);
+
+              return (
+                <button
+                  key={location.id}
+                  type="button"
+                  onClick={() => handleLocationClick(location)}
+                  className={`absolute z-20 flex max-w-[150px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2 rounded-lg border px-3 py-2 text-center text-xs font-bold shadow-soft transition hover:-translate-y-[55%] hover:border-amber-200 hover:bg-white hover:text-navy-950 ${
+                    isActive
+                      ? "border-amberAccent bg-amberAccent text-navy-950"
+                      : "border-white/20 bg-navy-950/85 text-white"
+                  }`}
+                  style={{ left: `${location.x}%`, top: `${location.y}%` }}
+                  title={`Walk to ${location.name}`}
+                >
+                  <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                    {isVisited ? (
+                      <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-success ring-2 ring-white" />
+                    ) : null}
+                  </span>
+                  <span className="leading-tight">{location.name}</span>
+                </button>
+              );
+            })}
+
+            <div
+              className="absolute z-30 transition-all duration-700 ease-out"
+              style={{
+                left: `${activeLocation.x}%`,
+                top: `${activeLocation.y}%`,
+                transform: "translate(-50%, calc(-100% - 18px))",
+              }}
+            >
+              <MiniAvatar avatar={player.avatar} name={player.name} />
+            </div>
+          </div>
+        </div>
+
+        <aside className="rounded-lg bg-white p-5 text-navy-950 shadow-soft sm:p-6">
+          <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
+                Current Location
+              </p>
+              <h2 className="mt-2 text-2xl font-bold tracking-normal">
+                {activeLocation.name}
+              </h2>
+              <p className="mt-1 text-sm font-semibold text-slate-500">
+                {activeLocation.type}
+              </p>
+            </div>
+            <div className="flex h-12 w-12 flex-none items-center justify-center rounded-lg bg-navy-900 text-amber-200">
+              {(() => {
+                const Icon = locationIcons[activeLocation.id] || Landmark;
+                return <Icon className="h-6 w-6" aria-hidden="true" />;
+              })()}
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <p className="text-sm leading-6 text-slate-600">
+              {activeLocation.description}
+            </p>
+            <div className="mt-3 flex items-start gap-2 text-sm font-semibold text-risk">
+              <MailWarning className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
+              <span>{activeLocation.clue}</span>
+            </div>
+          </div>
+
+          <div className="mt-5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-bold uppercase tracking-[0.16em] text-amber-700">
+                Encounter {questionNumber}
+              </p>
+              <span className="rounded-lg bg-navy-900 px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white">
+                {question.category}
+              </span>
+            </div>
+            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+              <div
+                className="h-full rounded-full bg-amberAccent transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <h3 className="mt-5 text-xl font-bold leading-8 tracking-normal text-navy-950">
+              {question.question}
+            </h3>
+          </div>
+
+          <div className="mt-5 grid gap-3">
+            {question.options.map((option) => (
+              <button
+                key={option}
+                type="button"
+                disabled={answered}
+                onClick={() => onAnswer(option)}
+                className={`flex w-full items-start justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm font-semibold leading-6 transition ${optionClass(
+                  option,
+                  selectedAnswer,
+                  question.correctAnswer,
+                )}`}
+              >
+                <span>{option}</span>
+                {answered && option === question.correctAnswer ? (
+                  <CheckCircle2
+                    className="mt-0.5 h-5 w-5 flex-none text-success"
+                    aria-hidden="true"
+                  />
+                ) : null}
+                {answered &&
+                option === selectedAnswer &&
+                option !== question.correctAnswer ? (
+                  <XCircle
+                    className="mt-0.5 h-5 w-5 flex-none text-risk"
+                    aria-hidden="true"
+                  />
+                ) : null}
+              </button>
+            ))}
+          </div>
+
+          {answered ? (
+            <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
+              <div className="flex items-start gap-3">
+                <div
+                  className={`flex h-10 w-10 flex-none items-center justify-center rounded-lg ${
+                    isCorrect ? "bg-emerald-100 text-success" : "bg-orange-100 text-risk"
+                  }`}
+                >
+                  {isCorrect ? (
+                    <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+                  ) : (
+                    <ShieldAlert className="h-5 w-5" aria-hidden="true" />
+                  )}
+                </div>
+                <div>
+                  <p
+                    className={`text-base font-bold ${
+                      isCorrect ? "text-success" : "text-risk"
+                    }`}
+                  >
+                    {isCorrect ? "Right call made" : "Risk detected"}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-slate-700">
+                    Correct answer:{" "}
+                    <span className="font-semibold text-navy-950">
+                      {question.correctAnswer}
+                    </span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-3">
+                <div className="rounded-lg bg-white p-4">
+                  <p className="text-sm font-bold text-navy-950">Case Note</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {question.explanation}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-white p-4">
+                  <p className="text-sm font-bold text-navy-950">
+                    Why It Matters
+                  </p>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {question.whyItMatters}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-white p-4">
+                  <div className="flex items-center gap-2 text-risk">
+                    <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                    <p className="text-sm font-bold">Red Flag</p>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {question.redFlag}
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={onNext}
+                title="Continue adventure"
+                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-navy-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-navy-800"
+              >
+                {questionNumber === totalQuestions ? "Finish Adventure" : "Walk to Next Case"}
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          ) : null}
+        </aside>
+      </section>
+    </main>
+  );
+};
+
+export default AdventureMap;
