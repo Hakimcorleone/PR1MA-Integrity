@@ -1,21 +1,20 @@
-const LEADERBOARD_KEY = "rightCallIntegrityLeaderboard";
-const MAX_LEADERBOARD_ENTRIES = 50;
+const RESULTS_KEY = "pr1maIntegrityMissionResults";
 
-export const getLeaderboard = () => {
+export const getSavedResults = () => {
   if (typeof window === "undefined") {
     return [];
   }
 
   try {
-    const stored = window.localStorage.getItem(LEADERBOARD_KEY);
+    const stored = window.localStorage.getItem(RESULTS_KEY);
     return stored ? JSON.parse(stored) : [];
   } catch (error) {
-    console.warn("Unable to read leaderboard data", error);
+    console.warn("Unable to read mission results", error);
     return [];
   }
 };
 
-export const saveResultToLeaderboard = (result) => {
+export const saveMissionResult = (result) => {
   if (typeof window === "undefined") {
     return [];
   }
@@ -29,26 +28,13 @@ export const saveResultToLeaderboard = (result) => {
     ...result,
   };
 
-  const leaderboard = [...getLeaderboard(), entry]
-    .sort((a, b) => {
-      if (b.percentage !== a.percentage) {
-        return b.percentage - a.percentage;
-      }
-
-      if (b.earned !== a.earned) {
-        return b.earned - a.earned;
-      }
-
-      return new Date(b.completedAt) - new Date(a.completedAt);
-    })
-    .slice(0, MAX_LEADERBOARD_ENTRIES);
-
-  window.localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(leaderboard));
-  return leaderboard;
+  const results = [entry, ...getSavedResults()];
+  window.localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
+  return results;
 };
 
-export const clearLeaderboard = () => {
+export const clearSavedResults = () => {
   if (typeof window !== "undefined") {
-    window.localStorage.removeItem(LEADERBOARD_KEY);
+    window.localStorage.removeItem(RESULTS_KEY);
   }
 };
