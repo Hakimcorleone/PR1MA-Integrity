@@ -90,7 +90,7 @@ const Leaderboard = ({ entries, onBack, onRetake, onClear }) => {
                       size="sm"
                     />
                     <p className="mt-2 text-xs font-medium text-slate-500">
-                      {entry.name} | {entry.division} | {entry.role}
+                      {entry.name} | {entry.department || "Department"} | {entry.division} | {entry.role}
                     </p>
                   </div>
                   <div className="text-2xl font-bold text-navy-950 md:text-base">
