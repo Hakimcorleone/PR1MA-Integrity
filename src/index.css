@@ -43,3 +43,37 @@ select:focus-visible {
     linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
   background-size: 42px 42px;
 }
+
+.adventure-map {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(215, 161, 43, 0.22), transparent 24%),
+    radial-gradient(circle at 80% 26%, rgba(22, 138, 91, 0.2), transparent 22%),
+    radial-gradient(circle at 72% 76%, rgba(199, 81, 31, 0.15), transparent 24%),
+    linear-gradient(135deg, #0b2c4d 0%, #08213a 52%, #061525 100%);
+}
+
+.adventure-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.25));
+}
+
+.adventure-map::after {
+  content: "";
+  position: absolute;
+  inset: 10% 8%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .adventure-map {
+    min-height: 500px;
+  }
+}
