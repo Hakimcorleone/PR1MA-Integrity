@@ -5,6 +5,7 @@ import QuizCard from "./components/QuizCard.jsx";
 import ResultScreen from "./components/ResultScreen.jsx";
 import StartScreen from "./components/StartScreen.jsx";
 import { getRandomQuestions } from "./data/questions.js";
+import { getBadgesForResult } from "./data/quests.js";
 import {
   calculateCategoryPerformance,
   calculateScore,
@@ -27,6 +28,7 @@ const initialGameState = {
   profile: null,
   categoryPerformance: [],
   suggestion: "",
+  badges: [],
 };
 
 const App = () => {
@@ -37,6 +39,10 @@ const App = () => {
   const currentQuestion = useMemo(() => {
     return game.questions[game.currentQuestionIndex];
   }, [game.currentQuestionIndex, game.questions]);
+
+  const correctCount = useMemo(() => {
+    return game.answers.filter((answer) => answer.isCorrect).length;
+  }, [game.answers]);
 
   const startSetup = () => {
     setGame(initialGameState);
@@ -90,16 +96,20 @@ const App = () => {
       score.percentage,
       categoryPerformance,
     );
+    const badges = getBadgesForResult(score.percentage, answers);
 
     const updatedLeaderboard = saveResultToLeaderboard({
       name: game.player.name,
       division: game.player.division,
       role: game.player.role,
+      outlookEmail: game.player.outlookEmail,
+      avatar: game.player.avatar,
       earned: score.earned,
       totalPossible: score.totalPossible,
       percentage: score.percentage,
       profileTitle: profile.title,
       categoryPerformance,
+      badges,
     });
 
     setLeaderboard(updatedLeaderboard);
@@ -110,6 +120,7 @@ const App = () => {
       profile,
       categoryPerformance,
       suggestion,
+      badges,
     }));
     setScreen("result");
   };
@@ -136,6 +147,8 @@ const App = () => {
 
       {screen === "quiz" && currentQuestion ? (
         <QuizCard
+          player={game.player}
+          correctCount={correctCount}
           question={currentQuestion}
           questionNumber={game.currentQuestionIndex + 1}
           totalQuestions={game.questions.length}
@@ -152,6 +165,7 @@ const App = () => {
           profile={game.profile}
           categoryPerformance={game.categoryPerformance}
           suggestion={game.suggestion}
+          badges={game.badges}
           onRetake={startSetup}
           onLeaderboard={showLeaderboard}
         />
