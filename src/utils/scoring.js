@@ -1,12 +1,8 @@
+import { subScoreLabels } from "../data/questions.js";
+
 export const calculateScore = (answers) => {
-  const totalPossible = answers.reduce(
-    (sum, answer) => sum + (answer.question.points || 10),
-    0,
-  );
-  const earned = answers.reduce(
-    (sum, answer) => sum + (answer.isCorrect ? answer.question.points || 10 : 0),
-    0,
-  );
+  const earned = answers.reduce((sum, answer) => sum + answer.points, 0);
+  const totalPossible = answers.length * 10;
   const percentage =
     totalPossible === 0 ? 0 : Math.round((earned / totalPossible) * 100);
 
@@ -17,91 +13,83 @@ export const calculateScore = (answers) => {
   };
 };
 
-export const getIntegrityProfile = (percentage) => {
-  if (percentage >= 90) {
-    return {
-      title: "Trusted Decision Maker",
-      tone: "Excellent judgement under pressure",
-      description:
-        "You consistently recognise integrity risks and choose transparent, policy-aligned actions.",
+export const calculateSubScores = (answers) => {
+  const grouped = subScoreLabels.reduce((acc, label) => {
+    acc[label] = {
+      category: label,
+      earned: 0,
+      totalPossible: 0,
+      percentage: 0,
     };
-  }
+    return acc;
+  }, {});
 
-  if (percentage >= 75) {
-    return {
-      title: "Integrity Champion",
-      tone: "Strong integrity instincts",
-      description:
-        "You make sound decisions in most scenarios and show good awareness of reporting and declaration expectations.",
-    };
-  }
-
-  if (percentage >= 60) {
-    return {
-      title: "Developing Risk Spotter",
-      tone: "Good foundation with room to sharpen",
-      description:
-        "You identify many common risks, but some higher-pressure situations may need closer policy checks.",
-    };
-  }
-
-  return {
-    title: "Needs Integrity Refresher",
-    tone: "Refresh the essentials",
-    description:
-      "Review core policies and speak with Compliance or your supervisor before acting in unclear situations.",
-  };
-};
-
-export const calculateCategoryPerformance = (answers) => {
-  const grouped = answers.reduce((acc, answer) => {
-    const category = answer.question.category;
-
-    if (!acc[category]) {
-      acc[category] = {
-        category,
-        correct: 0,
-        total: 0,
+  answers.forEach((answer) => {
+    if (!grouped[answer.subScore]) {
+      grouped[answer.subScore] = {
+        category: answer.subScore,
+        earned: 0,
+        totalPossible: 0,
         percentage: 0,
       };
     }
 
-    acc[category].total += 1;
-    if (answer.isCorrect) {
-      acc[category].correct += 1;
-    }
+    grouped[answer.subScore].earned += answer.points;
+    grouped[answer.subScore].totalPossible += 10;
+  });
 
-    return acc;
-  }, {});
-
-  return Object.values(grouped)
-    .map((item) => ({
-      ...item,
-      percentage: Math.round((item.correct / item.total) * 100),
-    }))
-    .sort((a, b) => a.category.localeCompare(b.category));
+  return Object.values(grouped).map((item) => ({
+    ...item,
+    percentage:
+      item.totalPossible === 0
+        ? 0
+        : Math.round((item.earned / item.totalPossible) * 100),
+  }));
 };
 
-export const getImprovementSuggestion = (percentage, categoryPerformance) => {
-  const weakestCategory = [...categoryPerformance].sort(
-    (a, b) => a.percentage - b.percentage,
-  )[0];
-
-  if (!weakestCategory) {
-    return "Complete a challenge to receive a targeted improvement suggestion.";
+export const getBadgeByScore = (score) => {
+  if (score >= 90) {
+    return "Integrity Guardian";
   }
 
-  if (percentage >= 90) {
-    return `Keep reinforcing best practice by mentoring others on ${weakestCategory.category} scenarios and documenting decisions clearly.`;
+  if (score >= 75) {
+    return "Risk Spotter";
   }
 
-  if (percentage >= 75) {
-    return `Review recent ${weakestCategory.category} examples and practise spotting subtle red flags before decisions are made.`;
+  if (score >= 60) {
+    return "Policy Learner";
   }
 
-  if (percentage >= 60) {
-    return `Focus your refresher on ${weakestCategory.category}, especially when there is pressure to act quickly or informally.`;
+  return "Needs Refresher";
+};
+
+export const getWeakestSubScore = (subScores) => {
+  return [...subScores].sort((a, b) => {
+    if (a.percentage !== b.percentage) {
+      return a.percentage - b.percentage;
+    }
+
+    return a.earned - b.earned;
+  })[0];
+};
+
+const recommendationBySubScore = {
+  "Integrity Judgment":
+    "Focus on decision discipline under pressure: document the basis for decisions, challenge unsupported shortcuts, and use Integrity guidance when influence is unclear.",
+  "Conflict Radar":
+    "Refresh conflict, gifts, hospitality, and confidential information rules. Pay close attention to perception risk, not only direct personal gain.",
+  "Escalation Courage":
+    "Practise escalation routes for Whistleblowing, misconduct reporting, and superior pressure scenarios so concerns move through protected channels early.",
+  "Policy Awareness":
+    "Review ABMS, payment verification, due diligence, and site certification controls. Evidence and approval records should be complete before action is taken.",
+};
+
+export const getRecommendation = (subScores) => {
+  const weakest = getWeakestSubScore(subScores);
+
+  if (!weakest) {
+    return "Complete the mission to receive a targeted integrity recommendation.";
   }
 
-  return `Start with the basics in ${weakestCategory.category}: pause, check policy, declare concerns, and use approved escalation channels.`;
+  return recommendationBySubScore[weakest.category];
 };
