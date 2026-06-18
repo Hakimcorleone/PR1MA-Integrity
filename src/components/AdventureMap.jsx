@@ -22,6 +22,7 @@ import {
   getLocationByCategory,
   integrityDistrictLocations,
 } from "../data/locations.js";
+import AvatarFigure from "./AvatarFigure.jsx";
 
 const locationIcons = {
   hq: Building2,
@@ -54,25 +55,20 @@ const optionClass = (option, selectedAnswer, correctAnswer) => {
   return "border-slate-200 bg-slate-50 text-slate-500";
 };
 
-const MiniAvatar = ({ avatar, name }) => {
-  return (
-    <div className="relative flex flex-col items-center gap-1">
-      <div
-        className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-full border-4 border-white shadow-soft"
-        style={{ background: avatar?.suit || "#0b2c4d" }}
-      >
-        <div className="absolute top-2 h-5 w-5 rounded-full bg-white/95" />
-        <div className="absolute bottom-2 h-6 w-9 rounded-t-full bg-white/90" />
-        <div
-          className="absolute bottom-1 right-1 h-4 w-4 rounded-full border border-white"
-          style={{ background: avatar?.accent || "#d7a12b" }}
-        />
-      </div>
-      <span className="rounded-full bg-navy-950 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white shadow-soft">
-        {name || "You"}
-      </span>
-    </div>
-  );
+const buildFloorTiles = () => {
+  const tiles = [];
+
+  for (let row = 0; row < 6; row += 1) {
+    for (let col = 0; col < 7; col += 1) {
+      tiles.push({
+        id: `${row}-${col}`,
+        x: 50 + (col - row) * 7.2,
+        y: 31 + (col + row) * 5.7,
+      });
+    }
+  }
+
+  return tiles;
 };
 
 const AdventureMap = ({
@@ -85,11 +81,16 @@ const AdventureMap = ({
   onAnswer,
   onNext,
 }) => {
+  const floorTiles = useMemo(() => buildFloorTiles(), []);
   const suggestedLocation = useMemo(
     () => getLocationByCategory(question.category),
     [question.category],
   );
   const [activeLocation, setActiveLocation] = useState(suggestedLocation);
+  const [avatarPosition, setAvatarPosition] = useState({
+    x: suggestedLocation.x,
+    y: suggestedLocation.y,
+  });
   const [visitedLocations, setVisitedLocations] = useState([suggestedLocation.id]);
 
   const answered = Boolean(selectedAnswer);
@@ -99,6 +100,7 @@ const AdventureMap = ({
 
   useEffect(() => {
     setActiveLocation(suggestedLocation);
+    setAvatarPosition({ x: suggestedLocation.x, y: suggestedLocation.y });
     setVisitedLocations((current) =>
       current.includes(suggestedLocation.id)
         ? current
@@ -108,9 +110,14 @@ const AdventureMap = ({
 
   const handleLocationClick = (location) => {
     setActiveLocation(location);
+    setAvatarPosition({ x: location.x, y: location.y });
     setVisitedLocations((current) =>
       current.includes(location.id) ? current : [...current, location.id],
     );
+  };
+
+  const handleTileClick = (tile) => {
+    setAvatarPosition({ x: tile.x, y: tile.y });
   };
 
   return (
@@ -121,7 +128,7 @@ const AdventureMap = ({
             Integrity District Adventure
           </p>
           <h1 className="mt-2 text-2xl font-semibold tracking-normal sm:text-3xl">
-            Walk the case. Find the right call.
+            Click the floor. Walk the room. Investigate the case.
           </h1>
         </div>
         <div className="grid grid-cols-3 gap-2 text-center sm:min-w-[360px]">
@@ -153,10 +160,10 @@ const AdventureMap = ({
           <div className="flex flex-col gap-3 border-b border-white/10 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-200">
-                Explore Map
+                Isometric District Room
               </p>
               <p className="mt-1 text-sm text-slate-200">
-                Click a location to walk there and investigate the current case.
+                Click floor tiles to walk. Click buildings to investigate locations.
               </p>
             </div>
             <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white">
@@ -165,50 +172,68 @@ const AdventureMap = ({
             </div>
           </div>
 
-          <div className="adventure-map relative min-h-[520px] overflow-hidden sm:min-h-[600px]">
-            <div className="absolute left-[9%] top-[44%] h-3 w-[82%] rotate-[-7deg] rounded-full bg-white/12" />
-            <div className="absolute left-[18%] top-[18%] h-[70%] w-3 rotate-[18deg] rounded-full bg-white/10" />
-            <div className="absolute left-[47%] top-[12%] h-[78%] w-3 rotate-[-2deg] rounded-full bg-white/10" />
-            <div className="absolute left-[62%] top-[23%] h-[58%] w-3 rotate-[22deg] rounded-full bg-white/10" />
+          <div className="adventure-map relative min-h-[560px] overflow-hidden sm:min-h-[640px]">
+            <div className="absolute left-[10%] top-[11%] h-[72%] w-[12%] rounded-lg border border-white/10 bg-white/8" />
+            <div className="absolute right-[8%] top-[16%] h-[60%] w-[13%] rounded-lg border border-white/10 bg-white/8" />
+            <div className="absolute left-[24%] top-[8%] h-[8%] w-[52%] rounded-lg border border-white/10 bg-white/8" />
 
-            {integrityDistrictLocations.map((location) => {
-              const Icon = locationIcons[location.id] || MapPin;
-              const isActive = activeLocation.id === location.id;
-              const isVisited = visitedLocations.includes(location.id);
-
-              return (
+            <div className="absolute inset-0 z-10">
+              {floorTiles.map((tile) => (
                 <button
-                  key={location.id}
+                  key={tile.id}
                   type="button"
-                  onClick={() => handleLocationClick(location)}
-                  className={`absolute z-20 flex max-w-[150px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2 rounded-lg border px-3 py-2 text-center text-xs font-bold shadow-soft transition hover:-translate-y-[55%] hover:border-amber-200 hover:bg-white hover:text-navy-950 ${
-                    isActive
-                      ? "border-amberAccent bg-amberAccent text-navy-950"
-                      : "border-white/20 bg-navy-950/85 text-white"
-                  }`}
-                  style={{ left: `${location.x}%`, top: `${location.y}%` }}
-                  title={`Walk to ${location.name}`}
+                  onClick={() => handleTileClick(tile)}
+                  className="iso-tile absolute"
+                  style={{ left: `${tile.x}%`, top: `${tile.y}%` }}
+                  title="Walk here"
                 >
-                  <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-                    <Icon className="h-5 w-5" aria-hidden="true" />
-                    {isVisited ? (
-                      <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-success ring-2 ring-white" />
-                    ) : null}
-                  </span>
-                  <span className="leading-tight">{location.name}</span>
+                  <span className="sr-only">Walk here</span>
                 </button>
-              );
-            })}
+              ))}
+            </div>
+
+            <div className="absolute inset-0 z-30">
+              {integrityDistrictLocations.map((location) => {
+                const Icon = locationIcons[location.id] || MapPin;
+                const isActive = activeLocation.id === location.id;
+                const isVisited = visitedLocations.includes(location.id);
+
+                return (
+                  <button
+                    key={location.id}
+                    type="button"
+                    onClick={() => handleLocationClick(location)}
+                    className={`absolute flex max-w-[138px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2 rounded-lg border px-3 py-2 text-center text-xs font-bold shadow-soft transition hover:-translate-y-[55%] hover:border-amber-200 hover:bg-white hover:text-navy-950 ${
+                      isActive
+                        ? "border-amberAccent bg-amberAccent text-navy-950"
+                        : "border-white/20 bg-navy-950/90 text-white"
+                    }`}
+                    style={{ left: `${location.x}%`, top: `${location.y}%` }}
+                    title={`Walk to ${location.name}`}
+                  >
+                    <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
+                      <Icon className="h-5 w-5" aria-hidden="true" />
+                      {isVisited ? (
+                        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-success ring-2 ring-white" />
+                      ) : null}
+                    </span>
+                    <span className="leading-tight">{location.name}</span>
+                  </button>
+                );
+              })}
+            </div>
 
             <div
-              className="absolute z-30 transition-all duration-700 ease-out"
+              className="avatar-walker absolute z-40 transition-all duration-700 ease-out"
               style={{
-                left: `${activeLocation.x}%`,
-                top: `${activeLocation.y}%`,
-                transform: "translate(-50%, calc(-100% - 18px))",
+                left: `${avatarPosition.x}%`,
+                top: `${avatarPosition.y}%`,
               }}
             >
-              <MiniAvatar avatar={player.avatar} name={player.name} />
+              <AvatarFigure avatar={player.avatar} name={player.name} size="map" />
+              <span className="absolute left-1/2 top-full -translate-x-1/2 rounded-full bg-navy-950 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white shadow-soft">
+                {player.name || "You"}
+              </span>
             </div>
           </div>
         </div>
