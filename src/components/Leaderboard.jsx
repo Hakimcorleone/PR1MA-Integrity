@@ -1,5 +1,6 @@
 import { ArrowLeft, RotateCcw, Trash2, Trophy } from "lucide-react";
 import { useMemo } from "react";
+import AvatarBadge from "./AvatarBadge.jsx";
 
 const Leaderboard = ({ entries, onBack, onRetake, onClear }) => {
   const topEntries = useMemo(() => entries.slice(0, 10), [entries]);
@@ -24,10 +25,10 @@ const Leaderboard = ({ entries, onBack, onRetake, onClear }) => {
               </div>
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.22em] text-amber-700">
-                  Local Leaderboard
+                  Hall of Trust
                 </p>
                 <h1 className="text-3xl font-semibold tracking-normal text-navy-950">
-                  Top Integrity Scores
+                  Top Integrity Agents
                 </h1>
               </div>
             </div>
@@ -41,7 +42,7 @@ const Leaderboard = ({ entries, onBack, onRetake, onClear }) => {
               className="inline-flex items-center justify-center gap-2 rounded-lg bg-navy-900 px-4 py-3 text-sm font-bold text-white transition hover:bg-navy-800"
             >
               <RotateCcw className="h-4 w-4" aria-hidden="true" />
-              Retake
+              New Run
             </button>
             {entries.length > 0 ? (
               <button
@@ -59,42 +60,49 @@ const Leaderboard = ({ entries, onBack, onRetake, onClear }) => {
 
         {topEntries.length === 0 ? (
           <div className="py-12 text-center">
-            <p className="text-lg font-bold text-navy-950">No scores yet</p>
+            <p className="text-lg font-bold text-navy-950">No agents ranked yet</p>
             <p className="mt-2 text-sm text-slate-600">
-              Complete the challenge to create the first local leaderboard entry.
+              Complete the first mission run to unlock the local leaderboard.
             </p>
           </div>
         ) : (
           <div className="mt-6 overflow-hidden rounded-lg border border-slate-200">
-            <div className="hidden grid-cols-[72px_1fr_110px_140px_150px] bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-500 md:grid">
+            <div className="hidden grid-cols-[72px_1.4fr_110px_1fr_150px] bg-slate-50 px-4 py-3 text-xs font-bold uppercase tracking-[0.12em] text-slate-500 md:grid">
               <span>Rank</span>
-              <span>Player</span>
+              <span>Agent</span>
               <span>Score</span>
-              <span>Profile</span>
+              <span>Badge</span>
               <span>Date</span>
             </div>
             <div className="divide-y divide-slate-200">
               {topEntries.map((entry, index) => (
                 <div
                   key={entry.id}
-                  className="grid gap-3 px-4 py-4 md:grid-cols-[72px_1fr_110px_140px_150px] md:items-center"
+                  className="grid gap-3 px-4 py-4 md:grid-cols-[72px_1.4fr_110px_1fr_150px] md:items-center"
                 >
                   <div className="text-sm font-bold text-amber-700">
                     #{index + 1}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-navy-950">
-                      {entry.name}
-                    </p>
-                    <p className="mt-1 text-xs font-medium text-slate-500">
-                      {entry.division} | {entry.role}
+                    <AvatarBadge
+                      avatar={entry.avatar}
+                      name={entry.name}
+                      size="sm"
+                    />
+                    <p className="mt-2 text-xs font-medium text-slate-500">
+                      {entry.name} | {entry.division} | {entry.role}
                     </p>
                   </div>
                   <div className="text-2xl font-bold text-navy-950 md:text-base">
                     {entry.percentage}%
                   </div>
-                  <div className="text-sm font-semibold text-slate-700">
-                    {entry.profileTitle}
+                  <div>
+                    <p className="text-sm font-semibold text-slate-700">
+                      {entry.badges?.[0] || entry.profileTitle}
+                    </p>
+                    <p className="mt-1 text-xs font-medium text-slate-500">
+                      {entry.profileTitle}
+                    </p>
                   </div>
                   <div className="text-xs font-medium text-slate-500">
                     {new Date(entry.completedAt).toLocaleDateString()}
