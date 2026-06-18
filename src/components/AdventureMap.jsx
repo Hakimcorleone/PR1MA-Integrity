@@ -2,139 +2,96 @@ import {
   AlertTriangle,
   ArrowRight,
   BadgeCheck,
-  Building2,
   CheckCircle2,
   ClipboardList,
-  Construction,
-  Footprints,
+  Gauge,
   Landmark,
-  MailWarning,
-  MapPin,
-  Radio,
   ShieldAlert,
-  Store,
-  UsersRound,
-  WalletCards,
   XCircle,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
-import {
-  getLocationByCategory,
-  integrityDistrictLocations,
-} from "../data/locations.js";
-import AvatarFigure from "./AvatarFigure.jsx";
 
-const locationIcons = {
-  hq: Building2,
-  procurement: ClipboardList,
-  finance: WalletCards,
-  site: Construction,
-  hotline: Radio,
-  abms: BadgeCheck,
-  committee: UsersRound,
-  vendor: Store,
+const statusStyle = {
+  Correct: {
+    label: "text-success",
+    panel: "border-emerald-200 bg-emerald-50",
+    icon: "bg-emerald-100 text-success",
+  },
+  Risky: {
+    label: "text-risk",
+    panel: "border-orange-200 bg-orange-50",
+    icon: "bg-orange-100 text-risk",
+  },
+  Wrong: {
+    label: "text-red-700",
+    panel: "border-red-200 bg-red-50",
+    icon: "bg-red-100 text-red-700",
+  },
 };
 
-const optionClass = (option, selectedAnswer, correctAnswer) => {
-  const answered = Boolean(selectedAnswer);
-  const isSelected = selectedAnswer === option;
-  const isCorrect = correctAnswer === option;
+const optionClass = (option, selectedOptionId, bestOptionId) => {
+  const answered = Boolean(selectedOptionId);
+  const isSelected = selectedOptionId === option.id;
+  const isBest = bestOptionId === option.id;
 
   if (!answered) {
     return "border-slate-200 bg-white text-slate-800 hover:border-amberAccent hover:bg-amber-50";
   }
 
-  if (isCorrect) {
+  if (isSelected && option.feedback === "Correct") {
     return "border-success bg-emerald-50 text-emerald-950";
   }
 
-  if (isSelected && !isCorrect) {
+  if (isSelected && option.feedback === "Risky") {
     return "border-risk bg-orange-50 text-orange-950";
+  }
+
+  if (isSelected) {
+    return "border-red-300 bg-red-50 text-red-950";
+  }
+
+  if (isBest) {
+    return "border-emerald-200 bg-emerald-50/70 text-emerald-950";
   }
 
   return "border-slate-200 bg-slate-50 text-slate-500";
 };
 
-const buildFloorTiles = () => {
-  const tiles = [];
-
-  for (let row = 0; row < 6; row += 1) {
-    for (let col = 0; col < 7; col += 1) {
-      tiles.push({
-        id: `${row}-${col}`,
-        x: 50 + (col - row) * 7.2,
-        y: 31 + (col + row) * 5.7,
-      });
-    }
-  }
-
-  return tiles;
-};
-
 const AdventureMap = ({
-  player,
-  correctCount,
+  participant,
   question,
   questionNumber,
   totalQuestions,
-  selectedAnswer,
+  selectedOptionId,
+  currentEarned,
   onAnswer,
   onNext,
 }) => {
-  const floorTiles = useMemo(() => buildFloorTiles(), []);
-  const suggestedLocation = useMemo(
-    () => getLocationByCategory(question.category),
-    [question.category],
+  const selectedOption = question.options.find(
+    (option) => option.id === selectedOptionId,
   );
-  const [activeLocation, setActiveLocation] = useState(suggestedLocation);
-  const [avatarPosition, setAvatarPosition] = useState({
-    x: suggestedLocation.x,
-    y: suggestedLocation.y,
-  });
-  const [visitedLocations, setVisitedLocations] = useState([suggestedLocation.id]);
-
-  const answered = Boolean(selectedAnswer);
-  const isCorrect = selectedAnswer === question.correctAnswer;
+  const bestOption = question.options.find((option) => option.points === 10);
+  const answered = Boolean(selectedOption);
   const progress = Math.round((questionNumber / totalQuestions) * 100);
-  const missionCorrectCount = correctCount + (answered && isCorrect ? 1 : 0);
-
-  useEffect(() => {
-    setActiveLocation(suggestedLocation);
-    setAvatarPosition({ x: suggestedLocation.x, y: suggestedLocation.y });
-    setVisitedLocations((current) =>
-      current.includes(suggestedLocation.id)
-        ? current
-        : [...current, suggestedLocation.id],
-    );
-  }, [suggestedLocation]);
-
-  const handleLocationClick = (location) => {
-    setActiveLocation(location);
-    setAvatarPosition({ x: location.x, y: location.y });
-    setVisitedLocations((current) =>
-      current.includes(location.id) ? current : [...current, location.id],
-    );
-  };
-
-  const handleTileClick = (tile) => {
-    setAvatarPosition({ x: tile.x, y: tile.y });
-  };
+  const projectedScore = currentEarned + (selectedOption?.points || 0);
+  const feedback = selectedOption
+    ? statusStyle[selectedOption.feedback]
+    : statusStyle.Correct;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-7xl flex-col px-4 py-6 text-white sm:px-6 lg:px-8">
       <header className="flex flex-col gap-4 border-b border-white/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-amber-200">
-            Integrity District Adventure
+            Integrity Mission Room
           </p>
           <h1 className="mt-2 text-2xl font-semibold tracking-normal sm:text-3xl">
-            Click the floor. Walk the room. Investigate the case.
+            Case {questionNumber}: {question.theme}
           </h1>
         </div>
-        <div className="grid grid-cols-3 gap-2 text-center sm:min-w-[360px]">
+        <div className="grid grid-cols-3 gap-2 text-center sm:min-w-[390px]">
           <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
-              Case
+              Progress
             </p>
             <p className="mt-1 text-lg font-bold">
               {questionNumber}/{totalQuestions}
@@ -142,254 +99,189 @@ const AdventureMap = ({
           </div>
           <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
-              Calls
+              Score
             </p>
-            <p className="mt-1 text-lg font-bold">{missionCorrectCount}</p>
+            <p className="mt-1 text-lg font-bold">{projectedScore}/100</p>
           </div>
           <div className="rounded-lg border border-white/10 bg-white/10 px-3 py-2">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-300">
-              XP
+              Pillar
             </p>
-            <p className="mt-1 text-lg font-bold">{missionCorrectCount * 10}</p>
+            <p className="mt-1 truncate text-sm font-bold">
+              {question.subScore}
+            </p>
           </div>
         </div>
       </header>
 
-      <section className="grid flex-1 gap-5 py-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
-        <div className="overflow-hidden rounded-lg border border-white/12 bg-white/8 shadow-soft backdrop-blur">
-          <div className="flex flex-col gap-3 border-b border-white/10 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-200">
-                Isometric District Room
-              </p>
-              <p className="mt-1 text-sm text-slate-200">
-                Click floor tiles to walk. Click buildings to investigate locations.
-              </p>
+      <section className="grid flex-1 gap-5 py-6 lg:grid-cols-[0.86fr_1.14fr]">
+        <aside className="rounded-lg border border-white/10 bg-white/10 p-5 shadow-soft backdrop-blur sm:p-6">
+          <div className="rounded-lg bg-white p-5 text-navy-950">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
+                  Mission Context
+                </p>
+                <h2 className="mt-2 text-2xl font-bold tracking-normal">
+                  {question.location}
+                </h2>
+              </div>
+              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-lg bg-navy-900 text-amber-200">
+                <Landmark className="h-6 w-6" aria-hidden="true" />
+              </div>
             </div>
-            <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-bold text-white">
-              <Footprints className="h-4 w-4 text-amber-200" aria-hidden="true" />
-              {visitedLocations.length}/{integrityDistrictLocations.length} visited
-            </div>
-          </div>
-
-          <div className="adventure-map relative min-h-[560px] overflow-hidden sm:min-h-[640px]">
-            <div className="absolute left-[10%] top-[11%] h-[72%] w-[12%] rounded-lg border border-white/10 bg-white/8" />
-            <div className="absolute right-[8%] top-[16%] h-[60%] w-[13%] rounded-lg border border-white/10 bg-white/8" />
-            <div className="absolute left-[24%] top-[8%] h-[8%] w-[52%] rounded-lg border border-white/10 bg-white/8" />
-
-            <div className="absolute inset-0 z-10">
-              {floorTiles.map((tile) => (
-                <button
-                  key={tile.id}
-                  type="button"
-                  onClick={() => handleTileClick(tile)}
-                  className="iso-tile absolute"
-                  style={{ left: `${tile.x}%`, top: `${tile.y}%` }}
-                  title="Walk here"
-                >
-                  <span className="sr-only">Walk here</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="absolute inset-0 z-30">
-              {integrityDistrictLocations.map((location) => {
-                const Icon = locationIcons[location.id] || MapPin;
-                const isActive = activeLocation.id === location.id;
-                const isVisited = visitedLocations.includes(location.id);
-
-                return (
-                  <button
-                    key={location.id}
-                    type="button"
-                    onClick={() => handleLocationClick(location)}
-                    className={`absolute flex max-w-[138px] -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2 rounded-lg border px-3 py-2 text-center text-xs font-bold shadow-soft transition hover:-translate-y-[55%] hover:border-amber-200 hover:bg-white hover:text-navy-950 ${
-                      isActive
-                        ? "border-amberAccent bg-amberAccent text-navy-950"
-                        : "border-white/20 bg-navy-950/90 text-white"
-                    }`}
-                    style={{ left: `${location.x}%`, top: `${location.y}%` }}
-                    title={`Walk to ${location.name}`}
-                  >
-                    <span className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">
-                      <Icon className="h-5 w-5" aria-hidden="true" />
-                      {isVisited ? (
-                        <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-success ring-2 ring-white" />
-                      ) : null}
-                    </span>
-                    <span className="leading-tight">{location.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div
-              className="avatar-walker absolute z-40 transition-all duration-700 ease-out"
-              style={{
-                left: `${avatarPosition.x}%`,
-                top: `${avatarPosition.y}%`,
-              }}
-            >
-              <AvatarFigure avatar={player.avatar} name={player.name} size="map" />
-              <span className="absolute left-1/2 top-full -translate-x-1/2 rounded-full bg-navy-950 px-2 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-white shadow-soft">
-                {player.name || "You"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <aside className="rounded-lg bg-white p-5 text-navy-950 shadow-soft sm:p-6">
-          <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-amber-700">
-                Current Location
-              </p>
-              <h2 className="mt-2 text-2xl font-bold tracking-normal">
-                {activeLocation.name}
-              </h2>
-              <p className="mt-1 text-sm font-semibold text-slate-500">
-                {activeLocation.type}
-              </p>
-            </div>
-            <div className="flex h-12 w-12 flex-none items-center justify-center rounded-lg bg-navy-900 text-amber-200">
-              {(() => {
-                const Icon = locationIcons[activeLocation.id] || Landmark;
-                return <Icon className="h-6 w-6" aria-hidden="true" />;
-              })()}
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-            <p className="text-sm leading-6 text-slate-600">
-              {activeLocation.description}
-            </p>
-            <div className="mt-3 flex items-start gap-2 text-sm font-semibold text-risk">
-              <MailWarning className="mt-0.5 h-4 w-4 flex-none" aria-hidden="true" />
-              <span>{activeLocation.clue}</span>
-            </div>
-          </div>
-
-          <div className="mt-5">
-            <div className="flex items-center justify-between gap-3">
-              <p className="text-sm font-bold uppercase tracking-[0.16em] text-amber-700">
-                Encounter {questionNumber}
-              </p>
-              <span className="rounded-lg bg-navy-900 px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white">
-                {question.category}
-              </span>
-            </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+            <div className="mt-5 h-2 overflow-hidden rounded-full bg-slate-100">
               <div
-                className="h-full rounded-full bg-amberAccent transition-all"
+                className="h-full rounded-full bg-amberAccent transition-all duration-500"
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <h3 className="mt-5 text-xl font-bold leading-8 tracking-normal text-navy-950">
-              {question.question}
-            </h3>
+            <div className="mt-5 grid gap-3">
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
+                  Participant
+                </p>
+                <p className="mt-2 text-lg font-bold text-navy-950">
+                  {participant.name}
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {participant.department}
+                </p>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center gap-2 text-risk">
+                  <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+                  <p className="text-sm font-bold">Red Flag Lens</p>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Look for pressure, personal benefit, weak evidence, unequal
+                  information, or attempts to bypass approved controls.
+                </p>
+              </div>
+              <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                <div className="flex items-center gap-2 text-navy-950">
+                  <Gauge className="h-4 w-4 text-amber-700" aria-hidden="true" />
+                  <p className="text-sm font-bold">Decision Weight</p>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  Best decisions score 10. Acceptable controls score 6. Risky
+                  shortcuts score 3. Wrong decisions score 0.
+                </p>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section className="rounded-lg bg-white p-5 text-navy-950 shadow-soft sm:p-6">
+          <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-lg bg-amber-50 px-3 py-2 text-sm font-bold text-amber-800">
+                <ClipboardList className="h-4 w-4" aria-hidden="true" />
+                Decision Scenario
+              </div>
+              <h2 className="mt-4 text-2xl font-semibold leading-9 tracking-normal text-navy-950">
+                {question.question}
+              </h2>
+            </div>
+            <span className="w-fit rounded-lg bg-navy-900 px-3 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white">
+              {question.subScore}
+            </span>
           </div>
 
-          <div className="mt-5 grid gap-3">
-            {question.options.map((option) => (
+          <div className="mt-6 grid gap-3">
+            {question.options.map((option, index) => (
               <button
-                key={option}
+                key={option.id}
                 type="button"
                 disabled={answered}
-                onClick={() => onAnswer(option)}
-                className={`flex w-full items-start justify-between gap-3 rounded-lg border px-4 py-3 text-left text-sm font-semibold leading-6 transition ${optionClass(
+                onClick={() => onAnswer(option.id)}
+                className={`flex w-full items-start gap-4 rounded-lg border px-4 py-4 text-left transition ${optionClass(
                   option,
-                  selectedAnswer,
-                  question.correctAnswer,
+                  selectedOptionId,
+                  bestOption?.id,
                 )}`}
               >
-                <span>{option}</span>
-                {answered && option === question.correctAnswer ? (
-                  <CheckCircle2
-                    className="mt-0.5 h-5 w-5 flex-none text-success"
-                    aria-hidden="true"
-                  />
-                ) : null}
-                {answered &&
-                option === selectedAnswer &&
-                option !== question.correctAnswer ? (
-                  <XCircle
-                    className="mt-0.5 h-5 w-5 flex-none text-risk"
-                    aria-hidden="true"
-                  />
+                <span className="flex h-7 w-7 flex-none items-center justify-center rounded-lg bg-slate-100 text-sm font-bold text-navy-950">
+                  {String.fromCharCode(65 + index)}
+                </span>
+                <span className="flex-1 text-sm font-semibold leading-6">
+                  {option.text}
+                </span>
+                {answered && selectedOptionId === option.id ? (
+                  option.feedback === "Correct" ? (
+                    <CheckCircle2
+                      className="mt-1 h-5 w-5 flex-none text-success"
+                      aria-hidden="true"
+                    />
+                  ) : option.feedback === "Risky" ? (
+                    <ShieldAlert
+                      className="mt-1 h-5 w-5 flex-none text-risk"
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <XCircle
+                      className="mt-1 h-5 w-5 flex-none text-red-700"
+                      aria-hidden="true"
+                    />
+                  )
                 ) : null}
               </button>
             ))}
           </div>
 
           {answered ? (
-            <div className="mt-5 rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <div className={`mt-6 rounded-lg border p-4 sm:p-5 ${feedback.panel}`}>
               <div className="flex items-start gap-3">
                 <div
-                  className={`flex h-10 w-10 flex-none items-center justify-center rounded-lg ${
-                    isCorrect ? "bg-emerald-100 text-success" : "bg-orange-100 text-risk"
-                  }`}
+                  className={`flex h-11 w-11 flex-none items-center justify-center rounded-lg ${feedback.icon}`}
                 >
-                  {isCorrect ? (
-                    <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+                  {selectedOption.feedback === "Correct" ? (
+                    <CheckCircle2 className="h-6 w-6" aria-hidden="true" />
+                  ) : selectedOption.feedback === "Risky" ? (
+                    <ShieldAlert className="h-6 w-6" aria-hidden="true" />
                   ) : (
-                    <ShieldAlert className="h-5 w-5" aria-hidden="true" />
+                    <XCircle className="h-6 w-6" aria-hidden="true" />
                   )}
                 </div>
                 <div>
-                  <p
-                    className={`text-base font-bold ${
-                      isCorrect ? "text-success" : "text-risk"
-                    }`}
-                  >
-                    {isCorrect ? "Right call made" : "Risk detected"}
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-slate-700">
-                    Correct answer:{" "}
-                    <span className="font-semibold text-navy-950">
-                      {question.correctAnswer}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className={`text-lg font-bold ${feedback.label}`}>
+                      {selectedOption.feedback}
+                    </p>
+                    <span className="rounded-lg bg-white px-2 py-1 text-xs font-bold uppercase tracking-[0.12em] text-navy-900">
+                      {selectedOption.quality} | +{selectedOption.points}
                     </span>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-slate-700">
+                    {selectedOption.explanation}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 grid gap-3">
-                <div className="rounded-lg bg-white p-4">
-                  <p className="text-sm font-bold text-navy-950">Case Note</p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {question.explanation}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-white p-4">
-                  <p className="text-sm font-bold text-navy-950">
-                    Why It Matters
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {question.whyItMatters}
-                  </p>
-                </div>
-                <div className="rounded-lg bg-white p-4">
-                  <div className="flex items-center gap-2 text-risk">
-                    <AlertTriangle className="h-4 w-4" aria-hidden="true" />
-                    <p className="text-sm font-bold">Red Flag</p>
+              {selectedOption.points < 10 && bestOption ? (
+                <div className="mt-4 rounded-lg bg-white p-4">
+                  <div className="flex items-center gap-2 text-success">
+                    <BadgeCheck className="h-4 w-4" aria-hidden="true" />
+                    <p className="text-sm font-bold">Best decision</p>
                   </div>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {question.redFlag}
+                  <p className="mt-2 text-sm leading-6 text-slate-700">
+                    {bestOption.text}
                   </p>
                 </div>
-              </div>
+              ) : null}
 
               <button
                 type="button"
                 onClick={onNext}
-                title="Continue adventure"
-                className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-navy-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-navy-800"
+                title="Continue mission"
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-navy-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-navy-800 sm:w-auto"
               >
-                {questionNumber === totalQuestions ? "Finish Adventure" : "Walk to Next Case"}
+                {questionNumber === totalQuestions ? "View Result" : "Next Scenario"}
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </button>
             </div>
           ) : null}
-        </aside>
+        </section>
       </section>
     </main>
   );
