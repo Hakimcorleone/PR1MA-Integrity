@@ -1,21 +1,21 @@
 export const activeQuests = [
   {
     id: "quest-briefing",
-    title: "Briefing Check",
-    description: "Create an integrity avatar and enter the mission room.",
+    title: "Avatar Briefing",
+    description: "Create your agent identity before entering the Integrity District.",
     reward: "Profile unlocked",
   },
   {
     id: "quest-red-flags",
-    title: "Red Flag Hunt",
-    description: "Spot hidden risk signals across 10 corporate scenarios.",
+    title: "District Patrol",
+    description: "Walk between hotspots and investigate 10 corporate risk encounters.",
     reward: "+100 integrity XP",
   },
   {
     id: "quest-leaderboard",
-    title: "Trusted Circle",
-    description: "Save your score and climb the local leaderboard.",
-    reward: "Leaderboard rank",
+    title: "Hall of Trust",
+    description: "Complete the adventure and save your agent rank locally.",
+    reward: "Badge rank",
   },
 ];
 
