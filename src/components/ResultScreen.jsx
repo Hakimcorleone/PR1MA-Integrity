@@ -6,8 +6,8 @@ import {
   Save,
   ShieldCheck,
   Sparkles,
-  UserRound,
 } from "lucide-react";
+import AvatarBadge from "./AvatarBadge.jsx";
 
 const meterColor = (score) => {
   if (score >= 90) {
@@ -97,8 +97,12 @@ const ResultScreen = ({
                   {participant.email}
                 </p>
               </div>
-              <div className="flex h-12 w-12 flex-none items-center justify-center rounded-lg bg-slate-100 text-navy-900">
-                <UserRound className="h-6 w-6" aria-hidden="true" />
+              <div className="rounded-lg bg-slate-100 p-3 text-navy-950">
+                <AvatarBadge
+                  avatar={participant.avatar}
+                  name={participant.name}
+                  size="lg"
+                />
               </div>
             </div>
 
