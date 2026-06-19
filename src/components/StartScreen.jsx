@@ -10,8 +10,8 @@ import {
 const readinessSignals = [
   {
     label: "Scenario cases",
-    value: "10",
-    detail: "Vendor, procurement, payment, ABMS, and reporting decisions",
+    value: "30",
+    detail: "Vendor, procurement, HR, finance, site, ABMS, and reporting decisions",
   },
   {
     label: "Decision score",
