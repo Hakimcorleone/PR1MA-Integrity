@@ -9,6 +9,7 @@ import {
   ShieldAlert,
   XCircle,
 } from "lucide-react";
+import AvatarBadge from "./AvatarBadge.jsx";
 
 const statusStyle = {
   Correct: {
@@ -72,7 +73,8 @@ const AdventureMap = ({
   const bestOption = question.options.find((option) => option.points === 10);
   const answered = Boolean(selectedOption);
   const progress = Math.round((questionNumber / totalQuestions) * 100);
-  const projectedScore = currentEarned + (selectedOption?.points || 0);
+  const projectedPoints = currentEarned + (selectedOption?.points || 0);
+  const projectedScore = Math.round((projectedPoints / (totalQuestions * 10)) * 100);
   const feedback = selectedOption
     ? statusStyle[selectedOption.feedback]
     : statusStyle.Correct;
@@ -139,13 +141,17 @@ const AdventureMap = ({
             <div className="mt-5 grid gap-3">
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-500">
-                  Participant
+                  Mission Agent
                 </p>
-                <p className="mt-2 text-lg font-bold text-navy-950">
-                  {participant.name}
-                </p>
-                <p className="mt-1 text-sm text-slate-600">
-                  {participant.department}
+                <div className="mt-3">
+                  <AvatarBadge
+                    avatar={participant.avatar}
+                    name={participant.name}
+                    size="lg"
+                  />
+                </div>
+                <p className="mt-3 text-sm font-semibold text-slate-600">
+                  {participant.name} | {participant.department}
                 </p>
               </div>
               <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
@@ -164,8 +170,9 @@ const AdventureMap = ({
                   <p className="text-sm font-bold">Decision Weight</p>
                 </div>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  Best decisions score 10. Acceptable controls score 6. Risky
-                  shortcuts score 3. Wrong decisions score 0.
+                  Thirty cases are scored as a final percentage out of 100.
+                  Best decisions score 10, acceptable controls 6, risky shortcuts
+                  3, and wrong decisions 0.
                 </p>
               </div>
             </div>
